@@ -1,0 +1,964 @@
+{
+	"info": {
+		"_postman_id": "608c7432-65f0-4aa7-a444-859594f5f044",
+		"name": "CS492_HW2_paceym",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26747504"
+	},
+	"item": [
+		{
+			"name": "1 - Query Gists",
+			"item": [
+				{
+					"name": "1_at_least_30_public_gists",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/*\r",
+									"var url = \"https://api.github.com/gists\";\r",
+									"pm.sendRequest(url, function(err, res) {\r",
+									"    if(err) {\r",
+									"         console.log(err);\r",
+									"    } else {\r",
+									"    //    console.log(res.json());\r",
+									"    }\r",
+									"});\r",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test(\"Status Code is 200\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"    });\r",
+									"\r",
+									"pm.test(\"At least 30 public gists\", function() {\r",
+									"    var data = pm.response.json();\r",
+									"    pm.expect(data.length).to.gte(30);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/public",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"public"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2 - Query wolfordj",
+			"item": [
+				{
+					"name": "2_wolfordj_at_least_one",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test(\"Status Code is 200\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"    });\r",
+									"\r",
+									"pm.test(\"At least one public gist for wolfordj\", function() {\r",
+									"    var data = pm.response.json();\r",
+									"    pm.expect(data.length).to.gte(1);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/users/wolfordj/gists",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"users",
+								"wolfordj",
+								"gists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3 - Create",
+			"item": [
+				{
+					"name": "3_1_get_starting_gist_count",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.response.to.be.ok;\r",
+									"var gist_count = JSON.parse(responseBody).length;\r",
+									"console.log(\"3_1: gist_count is \" + gist_count);\r",
+									"postman.setEnvironmentVariable(\"gist_count\", gist_count);\r",
+									"\r",
+									" pm.test(\"Status Code is 200\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"    });\r",
+									"\r",
+									"\r",
+									"/*var gistsReturned = JSON.parse(responseBody);\r",
+									"var check = JSON.stringify(gistsReturned);\r",
+									"\r",
+									"postman.setGlobalVariable(\"numGists\", gistsReturned.length);\r",
+									"console.log(\"step 3.1\");\r",
+									"console.log(\"Numgists: \" + globals.numGists);\r",
+									"console.log(\"gistURL: \" + globals.gistURL);\r",
+									"*/\r",
+									"\r",
+									"/*\r",
+									"\r",
+									"pm.expect(responseBody).to.have.property('code', 200);\r",
+									"pm.expect(responseBody).to.have.property('status', 'OK');\r",
+									"var data = responseBody.json();\r",
+									"var gist_count = data.length;\r",
+									"pm.environment.set('gist_count', gist_count);\r",
+									"console.log(\"3_1: gist_count = {{gist_count}}\")\r",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/users/osu-mp/gists",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"users",
+								"osu-mp",
+								"gists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3_2_add_gist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var gists = JSON.parse(responseBody);\r",
+									"//postman.clearEnvironmentVariable(\"gistID\");\r",
+									"postman.setEnvironmentVariable(\"gist_id\", gists.id);\r",
+									"console.log(\"3_2: new gist id = \" + gists.id)\r",
+									"\r",
+									" pm.test(\"Status Code is 201\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(201)) ;\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"postman.setGlobalVariable(\"new_gist_description\", \"Hello World Gist\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Hello World Examples\",\r\n    \"public\": true,\r\n    \"files\": {\r\n        \"hello_world.js\": {\r\n            \"content\": \"conosle.log('Hello World');\"\r\n        },\r\n        \"hello_world_js.txt\": {\r\n            \"content\": \"Run `node hello_world.js` to print Hello World\"\r\n        }\r\n    }\r\n}"
+						},
+						"url": {
+							"raw": "https://api.github.com/gists",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3_3_get_updated_gist_count",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.response.to.be.ok;\r",
+									"var new_gist_count = JSON.parse(responseBody).length;\r",
+									"console.log(\"3_3: gist_count is \" + new_gist_count);\r",
+									"\r",
+									"var prev_count = parseInt(pm.environment.get('gist_count'));\r",
+									"// tests[\"Verify single gist added\"] = new_gist_count == (prev_count + 1);\r",
+									"\r",
+									" pm.test(\"Verify gist count increased\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"      pm.expect(new_gist_count).to.equal(prev_count + 1);\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/users/osu-mp/gists",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"users",
+								"osu-mp",
+								"gists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4 - Compare gist",
+			"item": [
+				{
+					"name": "4_compare_gist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.response.to.be.ok;\r",
+									"var gist_details = JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Verify gist details\", function () {\r",
+									"    pm.expect(gist_details.description).to.equal(\"Hello World Examples\");\r",
+									"    pm.expect(gist_details.public).to.equal(true);\r",
+									"    console.log(Object.keys(gist_details.files));\r",
+									"    pm.expect(JSON.stringify(Object.keys(gist_details.files))).to.equal(JSON.stringify(['hello_world.js', 'hello_world_js.txt']));\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5 - Edit gist",
+			"item": [
+				{
+					"name": "5_1_edit_gist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									" pm.test(\"Status Code is 200\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"    });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"UPDATED Hello World Example\"\r\n}"
+						},
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5_2_confirm_edit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.response.to.be.ok;\r",
+									"var gist_details = JSON.parse(responseBody);\r",
+									"\r",
+									"\r",
+									" pm.test(\"Validate content updated\", function() {\r",
+									"      pm.expect(gist_details.description).to.equal(\"UPDATED Hello World Example\");\r",
+									"\r",
+									"    });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6 - Star gist",
+			"item": [
+				{
+					"name": "6_1_verify_unstarred",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// if a gist is starred, the returned status code will be 204\r",
+									"// if unstarred, the status code is 404 (this is what we want since the gist should be unstarred at this point)\r",
+									"pm.test(\"Status Code is 404\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(404)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6_2_star",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// if the star operation was successfull, the status code should be 204\r",
+									"pm.test(\"Status Code is 204\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(204)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Length",
+								"value": "0",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6_3_confirm_star",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// if a gist is starred, the returned status code will be 204 (this is what we want since the gist should be starred in the previous request)\r",
+									"// if unstarred, the status code is 404 \r",
+									"pm.test(\"Status Code is 204\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(204)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7 - Confirm star",
+			"item": [
+				{
+					"name": "7_confirm_starred_gists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code is 200\", function () {\r",
+									"    pm.expect(pm.response.to.have.status(200));\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Check for starred\", function () {\r",
+									"    var gist_id = pm.environment.get('gist_id');\r",
+									"    let object_to_find = { id: gist_id }\r",
+									"    console.log(\"Looking for gist with id of: \" + gist_id)\r",
+									"    // Get the first match\r",
+									"    var data = pm.response.json();\r",
+									"    console.log(data)\r",
+									"    let result = data.find(function (value) {\r",
+									"        return value.id == object_to_find.id;\r",
+									"    });\r",
+									"\r",
+									"    pm.expect(result).not.equal(undefined);\r",
+									"    console.log('Starred gist found with target id: ' + result)\r",
+									"});\r",
+									"//var gist_id = 'a693121120f938f23faf0f1d2251e75d';\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/starred",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"starred"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8 - Un-star gist",
+			"item": [
+				{
+					"name": "8_1_verify_starred",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// if a gist is starred, the returned status code will be 204\r",
+									"// if unstarred, the status code is 404 (this is what we want since the gist should be unstarred at this point)\r",
+									"pm.test(\"Status Code is 204\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(204)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8_2_unstar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// if the unstar operation was successfull, the status code should be 204\r",
+									"console.log(\"Unstarring gist with id: \" + pm.environment.get('gist_id'));\r",
+									"pm.test(\"Status Code is 204\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(204)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Length",
+								"value": "0",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8_3_confirm_unstarred",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code is 404\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(404)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}/star",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}",
+								"star"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9 - Delete gist",
+			"item": [
+				{
+					"name": "9_1_verify_exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code is 200\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(200)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9_2_delete_it",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code is 204\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(204)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9_3_verify_deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status Code is 404\", function() {\r",
+									"      pm.expect(pm.response.to.have.status(404)) ;\r",
+									"    });\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.github.com/gists/{{gist_id}}",
+							"protocol": "https",
+							"host": [
+								"api",
+								"github",
+								"com"
+							],
+							"path": [
+								"gists",
+								"{{gist_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
