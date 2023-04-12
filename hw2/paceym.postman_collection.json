@@ -34,11 +34,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									" pm.test(\"Status Code is 200\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(200)) ;\r",
-									"    });\r",
-									"\r",
-									"pm.test(\"At least 30 public gists\", function() {\r",
+									"var test_desc = \"1 - At least 30 public gists\";\r",
+									"pm.test(test_desc, function() {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(200)) ;\r",
 									"    var data = pm.response.json();\r",
 									"    pm.expect(data.length).to.gte(30);\r",
 									"});"
@@ -48,6 +47,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -78,11 +87,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									" pm.test(\"Status Code is 200\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(200)) ;\r",
-									"    });\r",
-									"\r",
-									"pm.test(\"At least one public gist for wolfordj\", function() {\r",
+									"var test_desc = \"2 - At least one public gist for wolfordj\"\r",
+									"pm.test(test_desc, function() {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(200)) ;\r",
 									"    var data = pm.response.json();\r",
 									"    pm.expect(data.length).to.gte(1);\r",
 									"});"
@@ -92,6 +100,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -123,34 +141,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.response.to.be.ok;\r",
-									"var gist_count = JSON.parse(responseBody).length;\r",
-									"console.log(\"3_1: gist_count is \" + gist_count);\r",
-									"postman.setEnvironmentVariable(\"gist_count\", gist_count);\r",
+									"var test_desc = \"3.1 - count gists\";\r",
 									"\r",
-									" pm.test(\"Status Code is 200\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(200)) ;\r",
-									"    });\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(200));\r",
+									"    var gist_count = JSON.parse(responseBody).length;\r",
+									"    console.log(\"3.1: gist_count is \" + gist_count);\r",
+									"    postman.setEnvironmentVariable(\"gist_count\", gist_count);\r",
 									"\r",
-									"\r",
-									"/*var gistsReturned = JSON.parse(responseBody);\r",
-									"var check = JSON.stringify(gistsReturned);\r",
-									"\r",
-									"postman.setGlobalVariable(\"numGists\", gistsReturned.length);\r",
-									"console.log(\"step 3.1\");\r",
-									"console.log(\"Numgists: \" + globals.numGists);\r",
-									"console.log(\"gistURL: \" + globals.gistURL);\r",
-									"*/\r",
-									"\r",
-									"/*\r",
-									"\r",
-									"pm.expect(responseBody).to.have.property('code', 200);\r",
-									"pm.expect(responseBody).to.have.property('status', 'OK');\r",
-									"var data = responseBody.json();\r",
-									"var gist_count = data.length;\r",
-									"pm.environment.set('gist_count', gist_count);\r",
-									"console.log(\"3_1: gist_count = {{gist_count}}\")\r",
-									"*/"
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -193,14 +193,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"var gists = JSON.parse(responseBody);\r",
-									"//postman.clearEnvironmentVariable(\"gistID\");\r",
-									"postman.setEnvironmentVariable(\"gist_id\", gists.id);\r",
-									"console.log(\"3_2: new gist id = \" + gists.id)\r",
+									"var test_desc = \"3.2 - create gist\";\r",
 									"\r",
-									" pm.test(\"Status Code is 201\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(201)) ;\r",
-									"    });"
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(201));\r",
+									"\r",
+									"    var gists = JSON.parse(responseBody);\r",
+									"    postman.setEnvironmentVariable(\"gist_id\", gists.id);\r",
+									"    console.log(\"3.2: new gist id = \" + gists.id)\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -254,17 +256,17 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.response.to.be.ok;\r",
-									"var new_gist_count = JSON.parse(responseBody).length;\r",
-									"console.log(\"3_3: gist_count is \" + new_gist_count);\r",
+									"var test_desc = \"3.3 - verify gist increased by one\";\r",
 									"\r",
-									"var prev_count = parseInt(pm.environment.get('gist_count'));\r",
-									"// tests[\"Verify single gist added\"] = new_gist_count == (prev_count + 1);\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.response.to.be.ok;\r",
+									"    var new_gist_count = JSON.parse(responseBody).length;\r",
+									"    console.log(\"3.3: gist_count is \" + new_gist_count);\r",
 									"\r",
-									" pm.test(\"Verify gist count increased\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(200)) ;\r",
-									"      pm.expect(new_gist_count).to.equal(prev_count + 1);\r",
-									"    });"
+									"    var prev_count = parseInt(pm.environment.get('gist_count'));\r",
+									"    pm.expect(new_gist_count).to.equal(prev_count + 1);\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -312,13 +314,16 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.response.to.be.ok;\r",
-									"var gist_details = JSON.parse(responseBody);\r",
+									"var test_desc = \"4 - verify gist details\";\r",
 									"\r",
-									"pm.test(\"Verify gist details\", function () {\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.response.to.be.ok;\r",
+									"    var gist_details = JSON.parse(responseBody);\r",
+									"\r",
+									"    // validate desc, public and file names\r",
 									"    pm.expect(gist_details.description).to.equal(\"Hello World Examples\");\r",
 									"    pm.expect(gist_details.public).to.equal(true);\r",
-									"    console.log(Object.keys(gist_details.files));\r",
 									"    pm.expect(JSON.stringify(Object.keys(gist_details.files))).to.equal(JSON.stringify(['hello_world.js', 'hello_world_js.txt']));\r",
 									"});\r",
 									""
@@ -368,7 +373,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									" pm.test(\"Status Code is 200\", function() {\r",
+									"var test_desc = \"5.1 - edit gist\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
 									"      pm.expect(pm.response.to.have.status(200)) ;\r",
 									"    });\r",
 									"\r",
@@ -418,15 +426,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.response.to.be.ok;\r",
-									"var gist_details = JSON.parse(responseBody);\r",
+									"var test_desc = \"5.2 - confirm edit\";\r",
 									"\r",
-									"\r",
-									" pm.test(\"Validate content updated\", function() {\r",
-									"      pm.expect(gist_details.description).to.equal(\"UPDATED Hello World Example\");\r",
-									"\r",
-									"    });\r",
-									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.response.to.be.ok;\r",
+									"    var gist_details = JSON.parse(responseBody);\r",
+									"    pm.expect(gist_details.description).to.equal(\"UPDATED Hello World Example\");\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -474,9 +481,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
+									"var test_desc = \"6.1 - verify unstarred\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
 									"// if a gist is starred, the returned status code will be 204\r",
 									"// if unstarred, the status code is 404 (this is what we want since the gist should be unstarred at this point)\r",
-									"pm.test(\"Status Code is 404\", function() {\r",
 									"      pm.expect(pm.response.to.have.status(404)) ;\r",
 									"    });\r",
 									""
@@ -522,10 +532,13 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// if the star operation was successfull, the status code should be 204\r",
-									"pm.test(\"Status Code is 204\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(204)) ;\r",
-									"    });\r",
+									"var test_desc = \"6.2 - star selected gist\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    // if the star operation was successfull, the status code should be 204\r",
+									"    pm.expect(pm.response.to.have.status(204));\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -576,12 +589,25 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// if a gist is starred, the returned status code will be 204 (this is what we want since the gist should be starred in the previous request)\r",
-									"// if unstarred, the status code is 404 \r",
-									"pm.test(\"Status Code is 204\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(204)) ;\r",
-									"    });\r",
+									"var test_desc = \"6.3 - verify starred\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    // if a gist is starred, the returned status code will be 204 (this is what we want since the gist should be starred in the previous request)\r",
+									"    // if unstarred, the status code is 404 \r",
+									"    pm.expect(pm.response.to.have.status(204));\r",
+									"});\r",
 									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// wait a second before submitting this request (for the star to process)\r",
+									"setTimeout(function(){}, [2000]);"
 								],
 								"type": "text/javascript"
 							}
@@ -629,12 +655,13 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status Code is 200\", function () {\r",
+									"var test_desc = \"7 - confirm starred gists\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"\r",
 									"    pm.expect(pm.response.to.have.status(200));\r",
-									"});\r",
 									"\r",
-									"\r",
-									"pm.test(\"Check for starred\", function () {\r",
 									"    var gist_id = pm.environment.get('gist_id');\r",
 									"    let object_to_find = { id: gist_id }\r",
 									"    console.log(\"Looking for gist with id of: \" + gist_id)\r",
@@ -644,11 +671,10 @@
 									"    let result = data.find(function (value) {\r",
 									"        return value.id == object_to_find.id;\r",
 									"    });\r",
-									"\r",
+									"    // validate the gist with the given id is in the starred list (not undefined obj)\r",
 									"    pm.expect(result).not.equal(undefined);\r",
-									"    console.log('Starred gist found with target id: ' + result)\r",
+									"    //console.log('Starred gist found with target id: ' + result)\r",
 									"});\r",
-									"//var gist_id = 'a693121120f938f23faf0f1d2251e75d';\r",
 									""
 								],
 								"type": "text/javascript"
@@ -696,11 +722,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// if a gist is starred, the returned status code will be 204\r",
-									"// if unstarred, the status code is 404 (this is what we want since the gist should be unstarred at this point)\r",
-									"pm.test(\"Status Code is 204\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(204)) ;\r",
-									"    });\r",
+									"var test_desc = \"8.1 - verify selected gist is starred\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    // if a gist is starred, the returned status code will be 204\r",
+									"    // if unstarred, the status code is 404 (this is what we want since the gist should be unstarred at this point)\r",
+									"    pm.expect(pm.response.to.have.status(204));\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -744,11 +773,13 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// if the unstar operation was successfull, the status code should be 204\r",
-									"console.log(\"Unstarring gist with id: \" + pm.environment.get('gist_id'));\r",
-									"pm.test(\"Status Code is 204\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(204)) ;\r",
-									"    });\r",
+									"var test_desc = \"8.2 - unstar selected gist\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    // if the unstar operation was successfull, the status code should be 204\r",
+									"    pm.expect(pm.response.to.have.status(204));\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -799,10 +830,23 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status Code is 404\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(404)) ;\r",
-									"    });\r",
+									"var test_desc = \"8.3 - verify unstarred\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(404));\r",
+									"});\r",
 									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// wait a second before submitting this request (for the unstar to process)\r",
+									"setTimeout(function(){}, [2000]);"
 								],
 								"type": "text/javascript"
 							}
@@ -850,7 +894,10 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status Code is 200\", function() {\r",
+									"var test_desc = \"9.1 - verify selected gist exists\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
 									"      pm.expect(pm.response.to.have.status(200)) ;\r",
 									"    });\r",
 									""
@@ -860,6 +907,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -885,9 +942,15 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status Code is 204\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(204)) ;\r",
-									"    });\r",
+									"var test_desc = \"9.2 - delete selected gist\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(204));\r",
+									"});\r",
+									"\r",
+									"// wait a couple seconds after deleting\r",
+									"setTimeout(function(){}, [2000]);\r",
 									""
 								],
 								"type": "text/javascript"
@@ -927,12 +990,25 @@
 					"name": "9_3_verify_deleted",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// wait a couple seconds before submitting this request (for the delete to process)\r",
+									"setTimeout(function(){}, [2000]);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status Code is 404\", function() {\r",
-									"      pm.expect(pm.response.to.have.status(404)) ;\r",
-									"    });\r",
+									"var test_desc = \"9.3 - verify selected gist is deleted\";\r",
+									"\r",
+									"pm.test(test_desc, function () {\r",
+									"    console.log(test_desc);\r",
+									"    pm.expect(pm.response.to.have.status(404));\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript"
@@ -940,6 +1016,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
