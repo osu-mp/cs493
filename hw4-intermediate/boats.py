@@ -56,6 +56,7 @@ def get_boat_loads(boat_id):
     else:
         return "Method not recognized", 400
 
+
 def new_boat(content):
     for key in ["name", "type", "length"]:
         if key not in content:
@@ -65,12 +66,10 @@ def new_boat(content):
         "name": content["name"],
         "type": content["type"],
         "length": content["length"],
-        "loads": [],
     })
     client.put(new_boat)
-    new_boat["id"] = new_boat.key.id
-    new_boat["self"] = get_boat_self(new_boat.key.id)
-    return new_boat, 201
+    boat, code = get_single_boat(new_boat.key.id)
+    return boat, 201
 
 
 def get_all_boats():
@@ -121,6 +120,8 @@ def assign_load_to_boat(boat_id, load_id):
     if load["carrier"] != None:
         return error("The load is already loaded on another boat", 403)
 
+    key = client.key(constants.loads, int(load_id))
+    load = client.get(key=key)
     load["carrier"] = boat_id
     client.put(load)
     return "DONE", 204
@@ -136,6 +137,8 @@ def delete_load_from_boat(boat_id, load_id):
     if not load["carrier"] or load["carrier"]["id"] != boat_id:
         return error("No boat with this boat_id is loaded with the load with this load_id", 404)
 
+    key = client.key(constants.loads, int(load_id))
+    load = client.get(key=key)
     load["carrier"] = None
     client.put(load)
     return "DONE", 204

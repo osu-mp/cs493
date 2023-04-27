@@ -30,6 +30,31 @@ def get_single_boat(id):
     return boat, 200
 
 
+def get_single_load(id):
+    key = client.key(constants.loads, int(id))
+    load = client.get(key=key)
+    print(id)
+    if not load:
+        return error("No load with this load_id exists", 404)
+    new_load = load.copy()
+    new_load["id"] = load.key.id
+    new_load["self"] = get_load_self(load.key.id)
+    new_load["carrier"] = get_carrier_info(load)
+    return new_load, 200
+
+def get_carrier_info(load):
+    boat_id = load["carrier"]
+    if boat_id == None:
+        return None
+    boat, code = get_single_boat(boat_id)
+    boat_info = {
+        "id": boat_id,
+        "name": boat["name"],
+        "self": get_boat_self(boat_id)
+    }
+    return boat_info
+
+
 def get_loads_for_boat(id):
     query = client.query(kind=constants.loads)
     query.add_filter("carrier", "=", id)
