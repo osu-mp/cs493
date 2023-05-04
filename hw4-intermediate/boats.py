@@ -12,9 +12,11 @@ bp = Blueprint('boat', __name__, url_prefix='/boats')
 
 @bp.route('', methods=["POST", "GET"])
 def response():
+    # doc added
     if request.method == "POST":
         content = request.get_json()
         return new_boat(content)
+    # doc added
     elif request.method == "GET":
         return get_all_boats()
     else:
@@ -23,8 +25,10 @@ def response():
 
 @bp.route('/<id>', methods=["GET", "DELETE"])
 def boats_id(id):
+    # doc added
     if request.method == "GET":
         return get_single_boat(id)
+    # doc added
     elif request.method == "DELETE":
         return delete_boat(id)
     else:
@@ -33,8 +37,10 @@ def boats_id(id):
 
 @bp.route('/<boat_id>/loads/<load_id>', methods=["PUT", "DELETE"])
 def assign_load(boat_id, load_id):
+    # doc added
     if request.method == "PUT":
         return assign_load_to_boat(boat_id, load_id)
+    # doc added
     elif request.method == "DELETE":
         return delete_load_from_boat(boat_id, load_id)
     else:
@@ -43,6 +49,7 @@ def assign_load(boat_id, load_id):
 
 @bp.route('/<boat_id>/loads', methods=["GET"])
 def get_boat_loads(boat_id):
+    # doc added
     if request.method == "GET":
         boat, code = get_single_boat(boat_id)
         if code == 404:

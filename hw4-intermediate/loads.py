@@ -11,17 +11,21 @@ bp = Blueprint('loads', __name__, url_prefix='/loads')
 
 @bp.route('', methods=['POST', 'GET'])
 def get_loads():
+    # doc added
     if request.method == "POST":
         content = request.get_json()
         return post_load(content)
+    # doc added
     elif request.method == "GET":
         return get_all_loads()
 
 
 @bp.route('/<id>', methods=["GET", "DELETE"])
 def loads_id(id):
+    # doc added
     if request.method == "GET":
         return get_single_load(id)
+    # doc added
     elif request.method == "DELETE":
         return delete_load(id)
     else:
