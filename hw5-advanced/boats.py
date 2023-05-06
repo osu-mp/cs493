@@ -1,4 +1,4 @@
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response, jsonify, render_template_string
 from google.cloud import datastore
 import json
 import constants
@@ -29,12 +29,7 @@ def boats_id(id):
         if 'application/json' in request.accept_mimetypes:
             return get_single_boat(id)
         elif 'text/html' in request.accept_mimetypes:
-            boat, code = get_single_boat(id)
-            if code != 200:
-                return boat, code
-            res = make_response(json2html.convert(json=json.dumps(boat)))
-            res.headers.set('Content-Type', 'text/html')
-            return res, 200
+            return get_single_boat_html(id)
         else:
             return error("Invalid accept type", 406)
     elif request.method == "DELETE":
@@ -231,3 +226,37 @@ def put_boat(id, content):
 #     client.put(load)
 #     return "DONE", 204
 
+def get_single_boat_html(id):
+    boat, code = get_single_boat(id)
+    if code != 200:
+        return boat, code
+    html = render_template_string('''<table>
+            <tr>
+                <td> Key </td> 
+                <td> Value </td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>{{id}}</td>
+            </tr>
+            <tr>
+                <td>name</td>
+                <td>{{name}}</td>
+            </tr>
+            <tr>
+                <td>type</td>
+                <td>{{type}}</td>
+            </tr>
+            <tr>
+                <td>length</td>
+                <td>{{length}}</td>
+            </tr>
+            <tr>
+                <td>url</td>
+                <td>{{url}}</td>
+            </tr>
+    </table>
+''', id=boat['id'], name=boat['name'], type=boat['type'], length=boat['length'], url=boat['self'])
+    res = make_response(html)
+    res.headers.set('Content-Type', 'text/html')
+    return res, 200
