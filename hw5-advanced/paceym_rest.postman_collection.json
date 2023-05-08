@@ -64,6 +64,100 @@
 			"response": []
 		},
 		{
+			"name": "add boat with invalid characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Boat name invalid. Must be alphanumeric and 20 characters or fewer.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Sea Witch2 - Invalid Name\",\n    \"type\": \"Catamaran\",\n    \"length\": 28\n}\n"
+				},
+				"url": {
+					"raw": "{{app_url}}/boats",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"boats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add boat with too many characters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status code\", function () {",
+							"    //Check for 201 status code",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"pm.test(\"400 error message\", function () {",
+							"     //Check for appropriate error message",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Boat name invalid. Must be alphanumeric and 20 characters or fewer.\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"123456789012345678901\",        // too many characters (limit is 20)\n    \"type\": \"Catamaran\",\n    \"length\": 28\n}\n"
+				},
+				"url": {
+					"raw": "{{app_url}}/boats",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"boats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "add boat with same name",
 			"event": [
 				{
@@ -382,7 +476,7 @@
 			"response": []
 		},
 		{
-			"name": "add boat02",
+			"name": "add boat02 with extra attributes",
 			"event": [
 				{
 					"listen": "test",
@@ -424,7 +518,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Lucia\",\n    \"type\": \"Catamaran\",\n    \"length\": 20\n}"
+					"raw": "{\n    \"name\": \"Lucia\",\n    \"type\": \"Catamaran\",\n    \"length\": 20,\n    \"color\": \"red\"\n}"
 				},
 				"url": {
 					"raw": "{{app_url}}/boats",
@@ -542,7 +636,7 @@
 							"pm.test(\"content is valid\", function () {",
 							"    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Odyssey II\");",
 							"    pm.expect(pm.response.json()[\"type\"]).to.eq(\"Catamaran\");",
-							"    pm.expect(pm.response.json()[\"length\"]).to.eq(20);",
+							"    pm.expect(pm.response.json()[\"length\"]).to.eq(28);",
 							"});",
 							"",
 							""
@@ -563,6 +657,52 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n  \"name\": \"Odyssey II\"\r\n}"
+				},
+				"url": {
+					"raw": "{{app_url}}/boats/{{boat_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"boats",
+						"{{boat_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit boat (name only), invalid name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Boat name invalid. Must be alphanumeric and 20 characters or fewer.\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Odyssey II - Invalid\"\r\n}"
 				},
 				"url": {
 					"raw": "{{app_url}}/boats/{{boat_id}}",
@@ -767,6 +907,52 @@
 			"response": []
 		},
 		{
+			"name": "edit boat with invalid name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"403 status\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							"",
+							"pm.test(\"403 error message\", function () {",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Boat name invalid. Must be alphanumeric and 20 characters or fewer.\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"Odyssey II - Bad Name\",\r\n  \"length\": 200,\r\n  \"type\": \"Blah\"\r\n}"
+				},
+				"url": {
+					"raw": "{{app_url}}/boats/{{boat_id}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"boats",
+						"{{boat_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "edit boat, update everything (200)",
 			"event": [
 				{
@@ -865,61 +1051,6 @@
 			"response": []
 		},
 		{
-			"name": "add boat02",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"//Set appropriate environment variable for boat id",
-							"pm.environment.set(\"boat02_id\", pm.response.json()[\"id\"]);",
-							"",
-							"pm.test(\"201 status code\", function () {",
-							"    //Check for appropriate 201 status code",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"",
-							"",
-							"pm.test(\"content is valid\", function () {",
-							"    //Check if content is valid including self attribute",
-							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Abraham\");",
-							"   pm.expect(pm.response.json()[\"type\"]).to.eq(\"Motor Boat\");",
-							"   pm.expect(pm.response.json()[\"length\"]).to.eq(25);",
-							"   //Check if the self url is correct",
-							"   const self_url = pm.environment.get(\"app_url\") + \"/boats/\" + pm.response.json()[\"id\"];",
-							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Abraham\",\n    \"type\": \"Motor Boat\",\n    \"length\": 25\n}"
-				},
-				"url": {
-					"raw": "{{app_url}}/boats",
-					"host": [
-						"{{app_url}}"
-					],
-					"path": [
-						"boats"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "add boat03",
 			"event": [
 				{
@@ -961,61 +1092,6 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"Calypso\",\n    \"type\": \"Sailing Boat\",\n    \"length\": 13\n}"
-				},
-				"url": {
-					"raw": "{{app_url}}/boats",
-					"host": [
-						"{{app_url}}"
-					],
-					"path": [
-						"boats"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "add boat04",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"//Set appropriate environment variable for boat id",
-							"pm.environment.set(\"boat04_id\", pm.response.json()[\"id\"]);",
-							"",
-							"pm.test(\"201 status code\", function () {",
-							"    //Check for appropriate 201 status code",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"",
-							"",
-							"pm.test(\"content is valid\", function () {",
-							"    //Check if content is valid including self attribute",
-							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"401K\");",
-							"   pm.expect(pm.response.json()[\"type\"]).to.eq(\"Yacht\");",
-							"   pm.expect(pm.response.json()[\"length\"]).to.eq(18);",
-							"   \\//Check if the self url is correct",
-							"   const self_url = pm.environment.get(\"app_url\") + \"/boats/\" + pm.response.json()[\"id\"];",
-							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"401K\",\n    \"type\": \"Yacht\",\n    \"length\": 18\n}"
 				},
 				"url": {
 					"raw": "{{app_url}}/boats",
@@ -1158,38 +1234,6 @@
 					"path": [
 						"boats",
 						"{{boat03_id}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "delete boat04",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"204 no content\", function () {",
-							"    //Check for appropriate 204 code",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{app_url}}/boats/{{boat04_id}}",
-					"host": [
-						"{{app_url}}"
-					],
-					"path": [
-						"boats",
-						"{{boat04_id}}"
 					]
 				}
 			},

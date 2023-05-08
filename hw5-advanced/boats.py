@@ -4,21 +4,18 @@ import json
 import constants
 from utils import *
 from json2html import *
+import re
 
 client = datastore.Client()
 
 bp = Blueprint('boat', __name__, url_prefix='/boats')
 
 
-@bp.route('', methods=["POST", "GET"])
+@bp.route('', methods=["POST"])
 def response():
-    # doc added
     if request.method == "POST":
         content = request.get_json()
         return new_boat(content)
-    # doc added
-    elif request.method == "GET":
-        return get_all_boats()
     else:
         return "Method not recognized", 400
 
@@ -45,35 +42,6 @@ def boats_id(id):
         return "Method not recognized", 400
 
 
-# @bp.route('/<boat_id>/loads/<load_id>', methods=["PUT", "DELETE"])
-# def assign_load(boat_id, load_id):
-#     # doc added
-#     if request.method == "PUT":
-#         return assign_load_to_boat(boat_id, load_id)
-#     # doc added
-#     elif request.method == "DELETE":
-#         return delete_load_from_boat(boat_id, load_id)
-#     else:
-#         return "Method not recognized", 400
-
-
-# @bp.route('/<boat_id>/loads', methods=["GET"])
-# def get_boat_loads(boat_id):
-#     # doc added
-#     if request.method == "GET":
-#         boat, code = get_single_boat(boat_id)
-#         if code == 404:
-#             return error("No boat with this boat_id exists", 404)
-#         loads = {"loads":  []}
-#         for load in get_loads_for_boat(boat_id):
-#             id = load["id"]
-#             full_load = get_single_load(id)
-#             loads["loads"].append(full_load)
-#         return loads, 200
-#     else:
-#         return "Method not recognized", 400
-
-
 def get_boat_name_unique(name):
     """
     Returns True iff the given boat name is unique (does not already exist in db)
@@ -82,6 +50,15 @@ def get_boat_name_unique(name):
     query.add_filter("name", "=", name)
     return len(list(query.fetch())) == 0
 
+def get_boat_name_valid(name):
+    """
+    Returns True iff the boat name is alphanumeric or spaces and 20 characters or fewer
+    """
+    if not re.match('[a-zA-Z\s]+$', name):
+        return False
+    if len(name) > 20:
+        return False
+    return True
 
 def new_boat(content):
     for key in ["name", "type", "length"]:
@@ -90,7 +67,8 @@ def new_boat(content):
 
     if not get_boat_name_unique(content["name"]):
         return error("Boat name already in use", 403)
-
+    if not get_boat_name_valid(content["name"]):
+        return error("Boat name invalid. Must be alphanumeric and 20 characters or fewer.", 403)
 
     new_boat = datastore.entity.Entity(key=client.key(constants.boats))
     new_boat.update({
@@ -100,7 +78,11 @@ def new_boat(content):
     })
     client.put(new_boat)
     boat, code = get_single_boat(new_boat.key.id)
-    return boat, 201
+
+    res = make_response(boat)
+    res.headers.set('Content-Type', 'application/json')
+    res.status_code = 201
+    return res
 
 
 def get_all_boats():
@@ -131,14 +113,11 @@ def delete_boat(id):
 
     client.delete(boat)
 
-    # # if the boat had any loads, unload those from the boat
-    # query = client.query(kind=constants.loads)
-    # query.add_filter("carrier", "=", id)
-    # for load in query.fetch():
-    #     load["carrier"] = None
-    #     client.put(load)
+    res = make_response("")
+    res.headers.set('Content-Type', 'application/json')
+    res.status_code = 204
+    return res
 
-    return "DONE", 204
 
 def patch_boat(id, content):
     if "id" in content:
@@ -151,13 +130,19 @@ def patch_boat(id, content):
 
     if "name" in content and not get_boat_name_unique(content["name"]):
         return error("Boat name already in use", 405)
+    if "name" in content and not get_boat_name_valid(content["name"]):
+        return error("Boat name invalid. Must be alphanumeric and 20 characters or fewer.", 403)
 
     boat = client.get(key=boat_key)
     for key in ["name", "type", "length"]:
         if key in content:
             boat.update({key: content[key]})
     client.put(boat)
-    return boat, 200
+
+    res = make_response(boat)
+    res.headers.set('Content-Type', 'application/json')
+    res.status_code = 200
+    return res
 
 def put_boat(id, content):
     if "id" in content:
@@ -171,6 +156,9 @@ def put_boat(id, content):
     boat = client.get(key=boat_key)
     if not boat:
         return error("No boat with this boat_id exists", 404)
+    if not get_boat_name_valid(content["name"]):
+        return error("Boat name invalid. Must be alphanumeric and 20 characters or fewer.", 403)
+
 
     if not get_boat_name_unique(content["name"]):
         # if the name is in use, but it is by this boat, that is allowed
@@ -184,7 +172,6 @@ def put_boat(id, content):
     })
     client.put(boat)
     boat, code = get_single_boat(boat.key.id)
-    # return boat, 303
 
     response = jsonify()
     response.status_code = 303
@@ -192,39 +179,6 @@ def put_boat(id, content):
     response.autocorrect_location_header = False
     return response
 
-
-# def assign_load_to_boat(boat_id, load_id):
-#     boat, code = get_single_boat(boat_id)
-#     load, load_code = get_single_load(load_id)
-#     if code != 200 or load_code != 200:
-#         return error("The specified boat and/or load does not exist", 404)
-#
-#     # see if load already exists
-#     if load["carrier"] != None:
-#         return error("The load is already loaded on another boat", 403)
-#
-#     key = client.key(constants.loads, int(load_id))
-#     load = client.get(key=key)
-#     load["carrier"] = boat_id
-#     client.put(load)
-#     return "DONE", 204
-
-
-# def delete_load_from_boat(boat_id, load_id):
-#     boat, code = get_single_boat(boat_id)
-#     load, load_code = get_single_load(load_id)
-#
-#     if code != 200 or load_code != 200:
-#         return error("No boat with this boat_id is loaded with the load with this load_id", 404)
-#
-#     if not load["carrier"] or load["carrier"]["id"] != boat_id:
-#         return error("No boat with this boat_id is loaded with the load with this load_id", 404)
-#
-#     key = client.key(constants.loads, int(load_id))
-#     load = client.get(key=key)
-#     load["carrier"] = None
-#     client.put(load)
-#     return "DONE", 204
 
 def get_single_boat_html(id):
     boat, code = get_single_boat(id)
@@ -259,4 +213,5 @@ def get_single_boat_html(id):
 ''', id=boat['id'], name=boat['name'], type=boat['type'], length=boat['length'], url=boat['self'])
     res = make_response(html)
     res.headers.set('Content-Type', 'text/html')
-    return res, 200
+    res.status_code = 200
+    return res
