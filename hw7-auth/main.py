@@ -234,7 +234,7 @@ def new_boat(content):
         "type": content["type"],
         "length": content["length"],
         "public": content["public"],
-        "owner": payload["sub"]
+        "owner": get_payload_sub()
     })
     client.put(new_boat)
     boat, code = get_single_boat(new_boat.key.id)
@@ -244,14 +244,65 @@ def new_boat(content):
     res.status_code = 201
     return res
 
+def get_payload_sub():
+    payload = verify_jwt(request)
+    return payload["sub"]
 
-@app.route('/boats', methods=["POST"])
+def get_all_boats():
+    query = client.query(kind=constants.boats)
+
+    try:
+        payload = verify_jwt(request)
+        query.add_filter("owner", "=", get_payload_sub())
+    except:
+        query.add_filter("public", "=", True)
+    results = list(query.fetch())
+    for boat in results:
+        boat["id"] = boat.key.id
+    return json.dumps(results), 200
+
+
+@app.route('/boats', methods=["GET", "POST"])
 def response():
-    if request.method == "POST":
+    if request.method == "GET":
+        return get_all_boats()
+    elif request.method == "POST":
         content = request.get_json()
         return new_boat(content)
     else:
         return "Method not recognized", 400
+
+
+def delete_boat(id):
+    payload = verify_jwt(request)
+
+    boat, boat_code = get_single_boat(id)
+
+    if boat_code == 404:
+        return error("No boat with this boat_id exists", 404)
+    if boat["owner"] != get_payload_sub():
+        return error("Boat is owned by someone else", 403)
+
+    client.delete(boat)
+
+    res = make_response("")
+    res.headers.set('Content-Type', 'application/json')
+    res.status_code = 204
+    return res
+
+
+@app.route('/boats/<id>', methods=["GET", "DELETE"])
+def boats_id(id):
+    if request.method == "GET":
+        if 'application/json' in request.accept_mimetypes:
+            return get_single_boat(id)
+        else:
+            return error("Invalid accept type", 406)
+    elif request.method == "DELETE":
+        return delete_boat(id)
+    else:
+        return "Method not recognized", 400
+
 
 
 if __name__ == '__main__':
