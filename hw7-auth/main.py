@@ -38,8 +38,6 @@ app.secret_key = env.get("APP_SECRET_KEY")
 
 client = datastore.Client()
 
-LODGINGS = "lodgings"
-
 # Update the values of the following 3 variables
 CLIENT_ID = env.get("AUTH0_CLIENT_ID")
 CLIENT_SECRET = env.get("AUTH0_CLIENT_SECRET")
@@ -143,20 +141,6 @@ def verify_jwt(request):
 
 
 
-# Create a lodging if the Authorization header contains a valid JWT
-@app.route('/lodgings', methods=['POST'])
-def lodgings_post():
-    if request.method == 'POST':
-        payload = verify_jwt(request)
-        content = request.get_json()
-        new_lodging = datastore.entity.Entity(key=client.key(LODGINGS))
-        new_lodging.update({"name": content["name"], "description": content["description"],
-          "price": content["price"]})
-        client.put(new_lodging)
-        return jsonify(id=new_lodging.key.id)
-    else:
-        return jsonify(error='Method not recogonized')
-
 # Decode the JWT supplied in the Authorization header
 @app.route('/decode', methods=['GET'])
 def decode_jwt():
@@ -170,6 +154,7 @@ def decode_jwt():
 # Response: JSON with the JWT as the value of the property id_token
 @app.route('/login_old', methods=['POST'])
 def login_user():
+    print("logging in2!")
     content = request.get_json()
     username = content["username"]
     password = content["password"]
@@ -185,6 +170,7 @@ def login_user():
 
 @app.route("/login")
 def login():
+    print("logging in!")
     return oauth.auth0.authorize_redirect(
         redirect_uri=url_for("callback", _external=True)
     )
@@ -228,7 +214,6 @@ def new_boat(content):
 
     new_boat = datastore.entity.Entity(key=client.key(constants.boats))
     payload = verify_jwt(request)
-    print(payload)
     new_boat.update({
         "name": content["name"],
         "type": content["type"],
@@ -273,23 +258,6 @@ def response():
         return "Method not recognized", 400
 
 
-def delete_boat(id):
-    payload = verify_jwt(request)
-
-    boat, boat_code = get_single_boat(id)
-
-    if boat_code == 404:
-        return error("No boat with this boat_id exists", 404)
-    if boat["owner"] != get_payload_sub():
-        return error("Boat is owned by someone else", 403)
-
-    client.delete(boat)
-
-    res = make_response("")
-    res.headers.set('Content-Type', 'application/json')
-    res.status_code = 204
-    return res
-
 
 @app.route('/boats/<id>', methods=["GET", "DELETE"])
 def boats_id(id):
@@ -303,7 +271,40 @@ def boats_id(id):
     else:
         return "Method not recognized", 400
 
+@app.route('/owners/<id>/boats', methods=["GET"])
+def boat_owners(id):
+    if request.method == "GET":
+        return get_boats_with_owner(id)
+    else:
+        return "Method not recognized", 400
 
+def get_boats_with_owner(id):
+    query = client.query(kind=constants.boats)
+    query.add_filter("owner", "=", id)
+    query.add_filter("public", "=", True)
+    results = list(query.fetch())
+    for boat in results:
+        boat["id"] = boat.key.id
+    return json.dumps(results), 200
+
+def delete_boat(id):
+    payload = verify_jwt(request)
+    if not id:
+        return error("Boat id is required", 403)
+
+    boat, boat_code = get_single_boat(id)
+
+    if boat_code == 404:
+        return error("No boat with this boat_id exists", 403)
+    if boat["owner"] != get_payload_sub():
+        return error("Boat is owned by someone else", 403)
+
+    client.delete(boat)
+
+    res = make_response("")
+    res.headers.set('Content-Type', 'application/json')
+    res.status_code = 204
+    return res
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
