@@ -7,10 +7,40 @@
 	},
 	"item": [
 		{
-			"name": "New Request",
+			"name": "Create activity (invalid)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for 400 status code\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['description', 'age_group', 'image_url']\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Missing description and image\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{app_url}}/activities",
 					"host": [
@@ -24,32 +54,22 @@
 			"response": []
 		},
 		{
-			"name": "add boat Copy",
+			"name": "Create activity (invalid attribute values)",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"//Set boat id environment variable from response",
-							"pm.environment.set(\"boat_id\", pm.response.json()[\"id\"]);",
-							"",
-							"pm.test(\"201 status code\", function () {",
-							"    //Check for 201 status code",
-							"    pm.response.to.have.status(201);",
-							"});",
-							"",
-							"",
-							"pm.test(\"content is valid\", function () {",
-							"   //Check if the response content is valid and matches the expected values",
-							"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Demo Boat Name\");",
-							"   pm.expect(pm.response.json()[\"type\"]).to.eq(\"Schooner\");",
-							"   pm.expect(pm.response.json()[\"length\"]).to.eq(12);",
-							"   pm.expect(pm.response.json()[\"loads\"]).to.deep.equal([]);",
-							"   //Check if the self url is correct",
-							"   const self_url = pm.environment.get(\"app_url\") + \"/boats/\" + pm.response.json()[\"id\"];",
-							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);",
-							"});",
-							"",
+							"pm.test(\"400 status code\", function () {\r",
+							"    //Check for 400 status code\r",
+							"    pm.response.to.have.status(403);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"400 error message\", function () {\r",
+							"     //Check for appropriate error message\r",
+							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Character limit of 40 for title exceeded; Character limit of 300 for description exceeded; The age_group must be between 0 and 60\");\r",
+							"});\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -58,24 +78,129 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Sea Witch\",\n    \"type\": \"Catamaran\",\n    \"length\": 28\n}\n"
+					"raw": "{\r\n    \"title\": \"This title is too long, it exceeds the 40 character limit\",\r\n    \"description\": \"Description too long. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.\",\r\n    \"age_group\": -1,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "{{app_url}}/boats",
+					"raw": "{{app_url}}/activities",
 					"host": [
 						"{{app_url}}"
 					],
 					"path": [
-						"boats"
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create activity 01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Set boat id environment variable from response\r",
+							"pm.environment.set(\"activity_id_01\", pm.response.json()[\"id\"]);\r",
+							"\r",
+							"pm.test(\"201 status code\", function () {\r",
+							"    //Check for 201 status code\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"content is valid\", function () {\r",
+							"   //Check if the response content is valid and matches the expected values\r",
+							"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes\");\r",
+							"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",);\r",
+							"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(18);\r",
+							"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\");\r",
+							"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+							"   //Check if the self url is correct\r",
+							"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Flipping Pancakes11\",\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",\r\n    \"age_group\": 18,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{app_url}}/activities",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete activity 01",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"204 no content\", function () {",
+							"    //Check for appropriate 204 code",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/activities/{{activity_id_01}}",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"activities",
+						"{{activity_id_01}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all activities (w/ pagination)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{app_url}}/activities",
+					"host": [
+						"{{app_url}}"
+					],
+					"path": [
+						"activities"
 					]
 				}
 			},
