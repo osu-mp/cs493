@@ -27,18 +27,19 @@ class Activity(DB_Obj):
 
     def validate_values(self, content):
         failures = []
-        if len(content["title"]) > max_title_len:
+        if "title" in content and len(content["title"]) > max_title_len:
             failures.append(f"Character limit of {max_title_len} for title exceeded")
-        if len(content["description"]) > max_description_len:
+        if "description" in content and len(content["description"]) > max_description_len:
             failures.append(f"Character limit of {max_description_len} for description exceeded")
-        if content["age_group"] < min_age_group or content["age_group"] > max_age_group:
+        if "age_group" in content and \
+                (content["age_group"] < min_age_group or content["age_group"] > max_age_group):
             failures.append(f"The age_group must be between {min_age_group} and {max_age_group}")
 
         if failures:
-            return False, "; ".join(failures)
+            return False, "; ".join(failures), 403
 
         # TODO: future validation, ensure image_url and video_url (if given) point to accessible links
-        return True, f"{self.key} validation passed"
+        return True, f"{self.key} validation passed", 200
 
 @bp.route('', methods=["GET", "POST"])
 def response():
@@ -49,7 +50,7 @@ def response():
     else:
         return "Method not recognized", 400
 
-@bp.route('/<id>', methods=["GET", "DELETE"])
+@bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
 def activity_id(id):
     obj = Activity(id)
     if not obj:
@@ -57,5 +58,9 @@ def activity_id(id):
 
     if request.method == "GET":
         return obj.get_item_from_db(id)
-    if request.method == "DELETE":
+    elif request.method == "DELETE":
         return obj.delete()
+    elif request.method == "PUT":
+        return obj.put_item(id, request.get_json())
+    elif request.method == "PATCH":
+        return obj.patch_item(id, request.get_json())
