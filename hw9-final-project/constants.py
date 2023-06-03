@@ -1,4 +1,6 @@
 activities = "activities"
+child = "child"
+users = "users"
 
 # local version
 url_root = "http://127.0.0.1:8080"
