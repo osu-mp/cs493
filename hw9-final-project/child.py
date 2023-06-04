@@ -1,12 +1,14 @@
+from datetime import datetime
 from flask import Blueprint, request, make_response, jsonify, render_template_string
 from google.cloud import datastore
 import json
 import constants
 from json2html import *
 import re
-from utils import error
+from utils import error, get_age_group
 from db_obj import DB_Obj
 
+from activities import Activity
 from auth import verify_jwt
 from users import User
 
@@ -26,19 +28,25 @@ class Child(DB_Obj):
                         id=id,
                         key=constants.child,
                         required=["name", "birthday"],
-                        optional=["premature_weeks", "provider_code"]
+                        optional=["premature_weeks", "provider_code", "assigned_activities"]
                         )
 
     def validate_values(self, content):
         failures = []
         if "name" in content and len(content["name"]) < min_name_length:
             failures.append(f"The name must be at least {min_name_length} characters")
-        # TODO : validate birthday
+        if "birthday" in content:
+            date_object = datetime.strptime(content["birthday"], "%Y-%m-%d")
+            difference = datetime.now() - date_object
+            months = difference.days * 12 // 365
+            print(f"Child is {months} months old")
         if "provider_code" in content and len(content["provider_code"]) != provider_code_length:
             failures.append(f"The provider_code must be {provider_code_length} characters")
         if "premature_weeks" in content and \
                 (content["premature_weeks"] < min_premature_weeks or content["premature_weeks"] > max_premature_weeks):
             failures.append(f"The age_group must be between {min_premature_weeks} and {max_premature_weeks}")
+
+        content["assigned_activities"] = content.get("assigned_activities", [])
 
         if failures:
             return False, "; ".join(failures), 403
@@ -77,6 +85,7 @@ class Child(DB_Obj):
         if not self.id:
             return error(f"id must be given", 404)
         return super().delete()
+
 
 @bp.route('', methods=["GET", "POST"])
 def response():
@@ -153,6 +162,67 @@ def assign_child_to_user(id, user_id):
         client.put(user)
         return "DONE", 204
     elif request.method == "DELETE":
+        # ensure child already assigned to user
+        if child["id"] not in user_from_db["children"]:
+            return error("Child not assigned to user", 403)
+
+        key = client.key(constants.users, int(user_id))
+        user = client.get(key=key)
+        print(f"USER BEFORE {user}")
+        user["children"].remove(child["id"])
+        print(f"USER AFTER {user}")
+        client.put(user)
+        return "DONE", 204
+
+    return "Method not recognized", 400
+
+@bp.route('/<id>/activities/<activity_id>', methods=["PUT", "DELETE"])
+def assign_activity(id, activity_id):
+    # ensure the user id data matches the jwt email data
+    id = int(id)
+    activity_id = int(activity_id)
+
+    activity, code = Activity().get_item_from_db(activity_id)
+    if code != 200:
+        return error("Activity not found", 404)
+
+    payload = verify_jwt(request)
+    children_for_user = User().get_child_ids_of_user(payload["email"])
+    print(f'{payload["email"]=}')
+    # child is not assigned to user
+    print(f"Child id {id}")
+    print(f"children assigned to user {children_for_user}")
+    if id not in children_for_user:
+        return error("Invalid auth", 403)
+
+    # ensure child exists
+    child, code = Child().get_item_from_db(id)
+    if code == 404:
+        return error("Child not found", 404)
+
+    if request.method == "PUT":
+        # ensure child not already assigned activity
+        if activity_id in child["assigned_activities"]:
+            return error("Activity already assigned to child", 403)
+
+        # a child can be assigned multiple activities, no need to check further
+
+        # TODO: ensure activity is correct group for child
+        child_age_group = get_age_group(child["birthday"])
+        if child_age_group != activity["age_group"]:
+
+            return error(f"Activity age group ({activity['age_group']}) does not agree with child age group ({child_age_group})", 403)
+
+        key = client.key(constants.child, int(child["id"]))
+        child = client.get(key=key)
+        print(f"child BEFORE {child}")
+        child["assigned_activities"].append(activity_id)
+        print(f"child AFTER {child}")
+        client.put(child)
+        return "DONE", 204
+    elif request.method == "DELETE":
+        # TODO
+        return error("not implemented", 404)
         # ensure child already assigned to user
         if child["id"] not in user_from_db["children"]:
             return error("Child not assigned to user", 403)

@@ -64,7 +64,7 @@ class User(DB_Obj):
         # return [5880693565423616, 5399054188019712]
 
         id = int(results[0].key.id)
-        return results[0]["children"]
+        return list(results[0]["children"])
 
 @bp.route('', methods=["GET", "POST"])
 def response():

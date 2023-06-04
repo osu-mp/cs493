@@ -56,13 +56,16 @@ class DB_Obj:
         res.status_code = 201
         return res
 
-    def get_item_from_db(self, id):
+    def get_item_from_db(self, id, include_extras=True):
         item_key = client.key(self.key, int(id))
         item = client.get(key=item_key)
         if not item:
             return error(f"No {self.key} object with this id {id} exists", 404)
-        item["id"] = item.key.id
-        item["self"] = self.get_item_self(id)
+        if include_extras:
+            # the id and self are added only when displaying to client
+            # but should be omitted when resaving item to db
+            item["id"] = item.key.id
+            item["self"] = self.get_item_self(id)
         return item, 200
 
     def get_item_self(self, id):
@@ -168,7 +171,7 @@ class DB_Obj:
         if not valid:
             return error(msg, 400)
 
-        obj, code = self.get_item_from_db(id)
+        obj, code = self.get_item_from_db(id, include_extras=False)
         if code != 200:
             return error(f"No {self.key} object with this id {id} exists", 404)
 

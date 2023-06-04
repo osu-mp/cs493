@@ -214,6 +214,8 @@ def user_details():
     """
     This function/route is only so that postman can retrieve the user id
     for the given jwt
+    NOTE: It will clear the children attached to a user. Again,
+    this is only for debug/493, get rid of it later.
     Returns:
 
     """
@@ -223,12 +225,15 @@ def user_details():
     email = payload["email"]
     print(f"email {email}")
     user_details, code = users.User().get_user_details(email)
-    print(f"{user_details=}")
-    return json.dumps({"id": user_details["id"]}), 200
-    try:
-        a = 1
-    except:
-        return error("You must be logged in to see this", 401)
+    user_details["children"] = []
+    id = user_details["id"]
+    del user_details["id"]
+    del user_details["self"]
+
+    print(f"Updating user {id} to {user_details=}")
+    users.User(id).put_item(id, user_details)
+    return json.dumps({"id":id}), 200
+
 
 def get_payload_sub():
     payload = verify_jwt(request)
