@@ -30,6 +30,7 @@ from utils import error
 
 from auth import AuthError
 import activities
+import child
 import users
 
 ENV_FILE = find_dotenv()
@@ -39,6 +40,7 @@ if ENV_FILE:
 app = Flask(__name__)
 app.secret_key = env.get("APP_SECRET_KEY")
 app.register_blueprint(activities.bp)
+app.register_blueprint(child.bp)
 app.register_blueprint(users.bp)
 
 
@@ -207,113 +209,33 @@ def home():
     return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 
-def new_boat(content):
-    for key in ["name", "type", "length", "public"]:
-        if key not in content:
-            return error("The request object is missing at least one of the required attributes", 400)
+@app.route("/me")
+def user_details():
+    """
+    This function/route is only so that postman can retrieve the user id
+    for the given jwt
+    Returns:
 
-    # if not get_boat_name_unique(content["name"]):
-    #     return error("Boat name already in use", 403)
-    # if not get_boat_name_valid(content["name"]):
-    #     return error("Boat name invalid. Must be alphanumeric and 20 characters or fewer.", 403)
+    """
 
-    new_boat = datastore.entity.Entity(key=client.key(constants.boats))
     payload = verify_jwt(request)
-    new_boat.update({
-        "name": content["name"],
-        "type": content["type"],
-        "length": content["length"],
-        "public": content["public"],
-        "owner": get_payload_sub()
-    })
-    client.put(new_boat)
-    boat, code = get_single_boat(new_boat.key.id)
-
-    res = make_response(boat)
-    res.headers.set('Content-Type', 'application/json')
-    res.status_code = 201
-    return res
-
+    print(f"{payload=}")
+    email = payload["email"]
+    print(f"email {email}")
+    user_details, code = users.User().get_user_details(email)
+    print(f"{user_details=}")
+    return json.dumps({"id": user_details["id"]}), 200
+    try:
+        a = 1
+    except:
+        return error("You must be logged in to see this", 401)
 
 def get_payload_sub():
     payload = verify_jwt(request)
     return payload["sub"]
 
 
-def get_all_boats():
-    query = client.query(kind=constants.boats)
 
-    try:
-        payload = verify_jwt(request)
-        query.add_filter("owner", "=", get_payload_sub())
-    except:
-        query.add_filter("public", "=", True)
-    results = list(query.fetch())
-    for boat in results:
-        boat["id"] = boat.key.id
-    return json.dumps(results), 200
-
-
-@app.route('/boats', methods=["GET", "POST"])
-def response():
-    if request.method == "GET":
-        return get_all_boats()
-    elif request.method == "POST":
-        content = request.get_json()
-        return new_boat(content)
-    else:
-        return "Method not recognized", 400
-
-
-@app.route('/boats/<id>', methods=["GET", "DELETE"])
-def boats_id(id):
-    if request.method == "GET":
-        if 'application/json' in request.accept_mimetypes:
-            return get_single_boat(id)
-        else:
-            return error("Invalid accept type", 406)
-    elif request.method == "DELETE":
-        return delete_boat(id)
-    else:
-        return "Method not recognized", 400
-
-
-@app.route('/owners/<id>/boats', methods=["GET"])
-def boat_owners(id):
-    if request.method == "GET":
-        return get_boats_with_owner(id)
-    else:
-        return "Method not recognized", 400
-
-
-def get_boats_with_owner(id):
-    query = client.query(kind=constants.boats)
-    query.add_filter("owner", "=", id)
-    query.add_filter("public", "=", True)
-    results = list(query.fetch())
-    for boat in results:
-        boat["id"] = boat.key.id
-    return json.dumps(results), 200
-
-
-def delete_boat(id):
-    payload = verify_jwt(request)
-    if not id:
-        return error("Boat id is required", 403)
-
-    boat, boat_code = get_single_boat(id)
-
-    if boat_code == 404:
-        return error("No boat with this boat_id exists", 403)
-    if boat["owner"] != get_payload_sub():
-        return error("Boat is owned by someone else", 403)
-
-    client.delete(boat)
-
-    res = make_response("")
-    res.headers.set('Content-Type', 'application/json')
-    res.status_code = 204
-    return res
 
 
 if __name__ == '__main__':

@@ -8,8 +8,6 @@ import constants
 
 client = datastore.Client()
 
-pagination_query_limit = 5
-
 class DB_Obj:
     def __init__(self, id=None, key=None, required=[], optional=[]):
         self.key = key
@@ -86,7 +84,7 @@ class DB_Obj:
 
     def get_all_items(self):
         query = client.query(kind=self.key)
-        q_limit = pagination_query_limit
+        q_limit = constants.pagination_query_limit
         q_offset = int(request.args.get('offset', '0'))
         g_iterator = query.fetch(limit=q_limit, offset=q_offset)
         pages = g_iterator.pages
@@ -103,6 +101,63 @@ class DB_Obj:
         if next_url:
             output["next"] = next_url
         output["total_items"] = len(list(query.fetch()))
+        return json.dumps(output), 200
+
+    def get_specific_items(self, ids):
+        """
+        Return only entities that are in the list of ids
+        Args:
+            ids:
+
+        Returns:
+
+        """
+        keys = []
+        for id in ids:
+            key = client.key(constants.child, int(id))
+            keys.append(key)
+        # child = client.get(key=child_key)
+        # print(f"KEY {child_key}, CHILD {child}")
+        multi = client.get_multi(keys)
+
+        # TODO: only using pagination for the assignment, get rid of after
+        # query = client.query(kind=self.key)
+        # query.add_filter("key", "IN", keys)
+        # single = query.fetch()
+        print(f"{multi=}")
+        # print(f"{single=}")
+
+        # return json.dumps(multi), 200
+        # return {}, 200
+        # keys = [
+        #     client.get(constants.child, 5880693565423616)
+        # ]
+        # print(f"KEYS {keys}")
+        # keys = [client.key("Task", 1), client.key("Task", 2)]
+        children = client.get_multi(keys)
+        # print("CHILDREN {children}")
+
+        # query = client.query(kind=self.key)
+        # print(f"KEYS {keys}")
+        # query.add_filter("key", "IN", keys)
+        q_limit = constants.pagination_query_limit
+        q_offset = int(request.args.get('offset', '0'))
+        # g_iterator = query.fetch(limit=q_limit, offset=q_offset)
+        pages = len(multi) // q_limit # g_iterator.pages
+        results = list(multi[q_offset:q_offset + q_limit])
+        if len(multi) > q_offset + q_limit:
+            next_offset = q_offset + q_limit
+            next_url = request.base_url + "?offset=" + str(next_offset) # + "?limit=" + str(q_limit)
+        else:
+            next_url = None
+        for e in results:
+            e["id"] = e.key.id
+            e["self"] = self.get_item_self(e.key.id)
+        output = {self.key: results}
+        if next_url:
+            output["next"] = next_url
+        output["total_items"] = len(multi)
+        print(f"{output=}")
         return json.dumps(output), 200
 
     def put_item(self, id, content):

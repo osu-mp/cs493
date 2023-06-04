@@ -7,204 +7,1756 @@
 	},
 	"item": [
 		{
-			"name": "Create activity (invalid)",
-			"event": [
+			"name": "Activities",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"400 status code\", function () {\r",
-							"    //Check for 400 status code\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"400 error message\", function () {\r",
-							"     //Check for appropriate error message\r",
-							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['description', 'age_group', 'image_url']\");\r",
-							"});\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Missing description and image\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create activity (invalid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"400 status code\", function () {\r",
+									"    //Check for 400 status code\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['description', 'age_group', 'image_url']\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{app_url}}/activities",
-					"host": [
-						"{{app_url}}"
 					],
-					"path": [
-						"activities"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create activity (invalid attribute values)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"400 status code\", function () {\r",
-							"    //Check for 400 status code\r",
-							"    pm.response.to.have.status(403);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"400 error message\", function () {\r",
-							"     //Check for appropriate error message\r",
-							"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Character limit of 40 for title exceeded; Character limit of 300 for description exceeded; The age_group must be between 0 and 60\");\r",
-							"});\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"This title is too long, it exceeds the 40 character limit\",\r\n    \"description\": \"Description too long. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.\",\r\n    \"age_group\": -1,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Missing description and image\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{app_url}}/activities",
-					"host": [
-						"{{app_url}}"
-					],
-					"path": [
-						"activities"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create activity 01",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"//Set boat id environment variable from response\r",
-							"pm.environment.set(\"activity_id_01\", pm.response.json()[\"id\"]);\r",
-							"\r",
-							"pm.test(\"201 status code\", function () {\r",
-							"    //Check for 201 status code\r",
-							"    pm.response.to.have.status(201);\r",
-							"});\r",
-							"\r",
-							"\r",
-							"pm.test(\"content is valid\", function () {\r",
-							"   //Check if the response content is valid and matches the expected values\r",
-							"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes\");\r",
-							"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",);\r",
-							"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(18);\r",
-							"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\");\r",
-							"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
-							"   //Check if the self url is correct\r",
-							"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
-							"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"title\": \"Flipping Pancakes11\",\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",\r\n    \"age_group\": 18,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "Create activity (invalid attribute values) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"400 status code\", function () {\r",
+									"    //Check for 400 status code\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Character limit of 40 for title exceeded; Character limit of 300 for description exceeded; The age_group must be between 0 and 60\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"This title is too long, it exceeds the 40 character limit\",\r\n    \"description\": \"Description too long. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec.\",\r\n    \"age_group\": -1,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{app_url}}/activities",
-					"host": [
-						"{{app_url}}"
-					],
-					"path": [
-						"activities"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "delete activity 01",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"204 no content\", function () {",
-							"    //Check for appropriate 204 code",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{app_url}}/activities/{{activity_id_01}}",
-					"host": [
-						"{{app_url}}"
+					"name": "Create activity 01 Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set boat id environment variable from response\r",
+									"pm.environment.set(\"activity_id_01\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    //Check for 201 status code\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(18);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"activities",
-						"{{activity_id_01}}"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Flipping Pancakes\",\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake.\",\r\n    \"age_group\": 18,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete activity (invalid id) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"404 status code\", function () {",
+									"    //Check for 400 status code",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"404 error message\", function () {",
+									"     //Check for appropriate error message",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No activities object with this id 01 exists\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/01",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity 01 (invalid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"300 status code\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['title']\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",\r\n    \"age_group\": 24,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity 01 (valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"303 status code\", function () {\r",
+									"    //Check for 201 status code\r",
+									"    pm.response.to.have.status(303);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated)\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(24);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Flipping Pancakes (updated)\",\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",\r\n    \"age_group\": 24,\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity 01 (age only) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    //Check for 201 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated)\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(32);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"age_group\": 32\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update activity 01 (everything but age) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    //Check for 200 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated again)\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated again)\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(32);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated_again\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Flipping Pancakes (updated again)\",\r\n    \"description\": \"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated again)\",\r\n    \"image_url\": \"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated_again\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all activities (w/ pagination) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get all activities (w/ pagination)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{app_url}}/activities",
-					"host": [
-						"{{app_url}}"
+			"name": "Caregivers (users)",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test7@test.com\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/users",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/users",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user_id_01 from token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// NOTE: this test assumes the caller has already created a user (see {{app_url}})\r",
+									"// after the jwt is copied to the auth for this request, the user id \r",
+									"// corresponding to that user will be set\r",
+									"\r",
+									"pm.environment.set(\"user_id_01\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"activities"
-					]
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/me",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user_id_02 from token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// NOTE: this test assumes the caller has already created a user (see {{app_url}})\r",
+									"// after the jwt is copied to the auth for this request, the user id \r",
+									"// corresponding to that user will be set\r",
+									"\r",
+									"pm.environment.set(\"user_id_02\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/me",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Children",
+			"item": [
+				{
+					"name": "Create child (invalid, missing birthday)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"400 status code\", function () {\r",
+									"    //Check for 400 status code\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['birthday']\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"A\",\r\n    \"premature_weeks\": 100,\r\n    \"provider_code\": \"ABC\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child (invalid attribute values)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be at least 2 characters; The provider_code must be 6 characters; The age_group must be between 0 and 40\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"A\",\r\n    \"birthday\": \"2021-01-31\",\r\n    \"premature_weeks\": 100,\r\n    \"provider_code\": \"ABC\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set child id environment variable from response\r",
+									"pm.environment.set(\"child_id_01\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    //Check for 201 status code\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2021-01-31\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(1);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEF\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari\",\r\n    \"birthday\": \"2021-01-31\",\r\n    \"premature_weeks\": 1,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child 02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set child id environment variable from response\r",
+									"pm.environment.set(\"child_id_02\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bobby\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2021-01-30\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(2);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEG\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Bobby\",\r\n    \"birthday\": \"2021-01-30\",\r\n    \"premature_weeks\": 2,\r\n    \"provider_code\": \"ABCDEG\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child 03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set child id environment variable from response\r",
+									"pm.environment.set(\"child_id_03\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Carl\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2020-01-30\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEH\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Carl\",\r\n    \"birthday\": \"2020-01-30\",\r\n    \"premature_weeks\": 3,\r\n    \"provider_code\": \"ABCDEH\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child 04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set child id environment variable from response\r",
+									"pm.environment.set(\"child_id_04\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Donnie\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2019-01-30\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(0);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEI\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Donnie\",\r\n    \"birthday\": \"2019-01-30\",\r\n    \"premature_weeks\": 0,\r\n    \"provider_code\": \"ABCDEI\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child (invalid id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"404 status code\", function () {",
+									"    //Check for 400 status code",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"404 error message\", function () {",
+									"     //Check for appropriate error message",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No child object with this id 01 exists\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/01",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (invalid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"400 status code\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['name', 'birthday']\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"303 status code\", function () {\r",
+									"    pm.response.to.have.status(303);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-02-01\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (name and code only)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Lastname\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABABCB\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari Lastname\",\r\n    \"provider_code\": \"ABABCB\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (everything but birthday)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Newname\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"123456\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari Newname\",\r\n    \"premature_weeks\": 3,\r\n    \"provider_code\": \"123456\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all activities (w/ pagination)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get children of user 01 (should be empty)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"//    pm.expect(pm.response.json()[\"child\"]).to.eq([]);   \r",
+									"   pm.expect(pm.response.json()[\"total_items\"]).to.eq(0);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign child 01 to user 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 status code\", function () {\r",
+									"    //Check for appropriate 204 status code\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign child 01 to user 01 (second time should fail 403)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Child already assigned to user\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign child 02 to user 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 status code\", function () {\r",
+									"    //Check for appropriate 204 status code\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_02}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_02}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign child 03 to user 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 status code\", function () {\r",
+									"    //Check for appropriate 204 status code\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_03}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_03}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get children of user 01 (3 total)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {   \r",
+									"   pm.expect(pm.response.json()[\"total_items\"]).to.eq(3);\r",
+									"\r",
+									"   let exp_ids = [pm.environment.get(\"child_id_01\"), pm.environment.get(\"child_id_02\"), pm.environment.get(\"child_id_03\")].sort();\r",
+									"\r",
+									"   let act_ids = [pm.response.json()[\"child\"][0][\"id\"], pm.response.json()[\"child\"][1][\"id\"], pm.response.json()[\"child\"][2][\"id\"]];\r",
+									"\r",
+									"   // commpare the two lists like here: https://community.postman.com/t/creating-a-request-that-compare-the-array-data-in-2-different-request/33565/2\r",
+									"   pm.expect(exp_ids\r",
+									"                 .filter(x => !act_ids.includes(x))\r",
+									"                 .concat(act_ids.filter(x => !exp_ids.includes(x))).length).to.eq(0);\r",
+									"   \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove child 02 from user 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 status code\", function () {\r",
+									"    //Check for appropriate 204 status code\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_02}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_02}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove child 02 from user 01 (again, should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_02}}/users/{{user_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_02}}",
+								"users",
+								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get children of user 01 (2 total)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {   \r",
+									"   pm.expect(pm.response.json()[\"total_items\"]).to.eq(2);\r",
+									"\r",
+									"   let exp_ids = [pm.environment.get(\"child_id_01\"), pm.environment.get(\"child_id_03\")].sort();\r",
+									"\r",
+									"   let act_ids = [pm.response.json()[\"child\"][0][\"id\"], pm.response.json()[\"child\"][1][\"id\"]];\r",
+									"\r",
+									"   // commpare the two lists like here: https://community.postman.com/t/creating-a-request-that-compare-the-array-data-in-2-different-request/33565/2\r",
+									"   pm.expect(exp_ids\r",
+									"                 .filter(x => !act_ids.includes(x))\r",
+									"                 .concat(act_ids.filter(x => !exp_ids.includes(x))).length).to.eq(0);\r",
+									"   \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "delete activity 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child 02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_02}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_02}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child 03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_03}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_03}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child 04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_04}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_04}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

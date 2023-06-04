@@ -31,8 +31,45 @@ class User(DB_Obj):
         # TODO validation
         return True, f"{self.key} validation passed", 200
 
+    def get_user_details(self, email):
+        query = client.query(kind=self.key)
+        query.add_filter("email", "=", email)
+        results = list(query.fetch())
+
+        if not results:
+            return error("User not found", 404)
+        # should not hit this
+        # if len(results) > 1:
+        #     return error("Too many users found", 401)
+        id = int(results[0].key.id)
+        return self.get_item_from_db(id)
+
+
+    def get_child_ids_of_user(self, email):
+        """
+        Given the users email address, return the list of children assigned to it
+        Args:
+            email:
+
+        Returns:
+
+        """
+        query = client.query(kind=self.key)
+        query.add_filter("email", "=", email)
+        results = list(query.fetch())
+
+        if not results:
+            return []
+        print(f'PACEY {results[0]["children"]}')
+        # return [5880693565423616, 5399054188019712]
+
+        id = int(results[0].key.id)
+        return results[0]["children"]
+
 @bp.route('', methods=["GET", "POST"])
 def response():
+    print("GET USERS")
+
     if request.method == "GET":
         return User().get_all_items()
     elif request.method == "POST":
