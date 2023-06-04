@@ -72,6 +72,8 @@ class DB_Obj:
         return True, f"No extra validation checks for {self.key}", 200
 
     def delete(self):
+        if not self.id:
+            return error(f"id must be given", 404)
         if self.code == 404:
             return error(f"No {self.key} object with this id {self.id} exists", 404)
 

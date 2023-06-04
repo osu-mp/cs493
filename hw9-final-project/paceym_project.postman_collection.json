@@ -433,42 +433,6 @@
 			"name": "Caregivers (users)",
 			"item": [
 				{
-					"name": "New Request",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{user_token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"test7@test.com\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{app_url}}/users",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get all users",
 					"request": {
 						"method": "GET",
@@ -905,14 +869,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"404 status code\", function () {",
-									"    //Check for 400 status code",
-									"    pm.response.to.have.status(404);",
+									"pm.test(\"403 status code\", function () {",
+									"    pm.response.to.have.status(403);",
 									"});",
 									"",
-									"pm.test(\"404 error message\", function () {",
-									"     //Check for appropriate error message",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No child object with this id 01 exists\");",
+									"pm.test(\"403 error message\", function () {",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Not authorized\");",
 									"});",
 									"",
 									""
@@ -922,6 +884,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -932,212 +904,6 @@
 							"path": [
 								"child",
 								"01"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update child 01 (invalid)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"400 status code\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"400 error message\", function () {\r",
-									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['name', 'birthday']\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"child",
-								"{{child_id_01}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update child 01 (valid)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"303 status code\", function () {\r",
-									"    pm.response.to.have.status(303);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"content is valid\", function () {\r",
-									"   //Check if the response content is valid and matches the expected values\r",
-									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
-									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
-									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
-									"   //Check if the self url is correct\r",
-									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
-									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-02-01\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"child",
-								"{{child_id_01}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update child 01 (name and code only)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"200 status code\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"content is valid\", function () {\r",
-									"   //Check if the response content is valid and matches the expected values\r",
-									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Lastname\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
-									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
-									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABABCB\");\r",
-									"   //Check if the self url is correct\r",
-									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
-									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari Lastname\",\r\n    \"provider_code\": \"ABABCB\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"child",
-								"{{child_id_01}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update child 01 (everything but birthday)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"200 status code\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"content is valid\", function () {\r",
-									"   //Check if the response content is valid and matches the expected values\r",
-									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Newname\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
-									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
-									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"123456\");\r",
-									"   //Check if the self url is correct\r",
-									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
-									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari Newname\",\r\n    \"premature_weeks\": 3,\r\n    \"provider_code\": \"123456\"\r\n}\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"child",
-								"{{child_id_01}}"
 							]
 						}
 					},
@@ -1387,6 +1153,252 @@
 								"{{child_id_03}}",
 								"users",
 								"{{user_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (invalid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"400 status code\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The request is missing the following required attributes: ['name', 'birthday']\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (valid)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"303 status code\", function () {\r",
+									"    pm.response.to.have.status(303);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-02-01\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (name and code only)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Lastname\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABABCB\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari Lastname\",\r\n    \"provider_code\": \"ABABCB\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update child 01 (everything but birthday)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Newname\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"123456\");\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari Newname\",\r\n    \"premature_weeks\": 3,\r\n    \"provider_code\": \"123456\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
 							]
 						}
 					},
@@ -1645,6 +1657,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -1661,7 +1683,48 @@
 					"response": []
 				},
 				{
-					"name": "delete child 02",
+					"name": "delete child 02 (as user 02, should fail)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 no content\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_02}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_02}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_02}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete child 02 (as user 01, should pass)",
 					"event": [
 						{
 							"listen": "test",
@@ -1677,6 +1740,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -1709,6 +1782,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -1741,6 +1824,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {

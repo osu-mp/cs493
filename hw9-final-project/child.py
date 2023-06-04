@@ -73,6 +73,11 @@ class Child(DB_Obj):
         output["total_items"] = len(list(query.fetch()))
         return json.dumps(output), 200
 
+    def delete(self):
+        if not self.id:
+            return error(f"id must be given", 404)
+        return super().delete()
+
 @bp.route('', methods=["GET", "POST"])
 def response():
     if request.method == "GET":
@@ -93,10 +98,17 @@ def response():
 
 @bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
 def activity_id(id):
+    payload = verify_jwt(request)
+    email = payload["email"]
+    user_details, code =User().get_user_details(email)
+    if code != 200:
+        return error("Not found", 404)
+    if int(id) not in user_details["children"]:
+        return error("Not authorized", 403)
 
     obj = Child(id)
     if not obj:
-        return error(f"Activity with id {id} not found", 404)
+        return error(f"Child with id {id} not found", 404)
 
     if request.method == "GET":
         return obj.get_item_from_db(id)
