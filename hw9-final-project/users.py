@@ -73,6 +73,8 @@ def response():
     if request.method == "GET":
         return User().get_all_items()
     elif request.method == "POST":
+        # this endpoint is called by a PostUserRegistration flow in Auth0
+        # it creates a user entry with the same email as used in the Auth0 process
         payload = verify_jwt(request)
         content = request.get_json()
         if payload["email"] != content["email"]:

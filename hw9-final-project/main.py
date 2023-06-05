@@ -206,6 +206,9 @@ def logout():
 
 @app.route("/")
 def home():
+    if request.accept_mimetype != 'application/json':
+        raise error("Unsupported accept mimetype, this API only supports 'application/json'", 406)
+
     return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 
@@ -240,8 +243,21 @@ def get_payload_sub():
     return payload["sub"]
 
 
+@app.before_request
+def before_request_helper():
+    """
+    This is run before every request.
+    Reject any request that does not accept JSON with 406 error code.
+    Returns:
+
+    """
+    if 'application/json' not in request.accept_mimetypes:
+        return error(f"Unsupported accept_mimetype ({request.accept_mimetypes}). Only 'application/json' is supported.", 406)
 
 
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return error("Method not allowed, refer to API spec for full details.", 405)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
