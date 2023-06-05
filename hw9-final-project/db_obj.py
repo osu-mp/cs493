@@ -15,7 +15,7 @@ class DB_Obj:
         self.optional = optional
 
         if id:
-            self.id = id
+            self.id = int(id)
             self.item, self.code = self.get_item_from_db(id)
 
 

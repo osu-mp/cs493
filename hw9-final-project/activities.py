@@ -41,6 +41,28 @@ class Activity(DB_Obj):
         # TODO: future validation, ensure image_url and video_url (if given) point to accessible links
         return True, f"{self.key} validation passed", 200
 
+    def delete(self):
+        if not self.id:
+            return error(f"id must be given", 404)
+
+        print(f"DELETE activity {self.id}")
+
+        # remove reference to this activity from an
+        query = client.query(kind=constants.child)
+        children = list(query.fetch())
+        for child in children:
+            if self.id in child["assigned_activities"]:
+                print(f"BEFORE UPDATE: {child}")
+                activities = list(child["assigned_activities"])
+                activities.remove(self.id)
+                child.update({"assigned_activities": activities})
+                client.put(child)
+                print(f"AFTER UPDATE: {child}")
+
+        # remove activity from any children assigned to it
+        # default datastore opertaions do not have a concept of 'contains'
+        return super().delete()
+
 @bp.route('', methods=["GET", "POST"])
 def response():
     if request.method == "GET":

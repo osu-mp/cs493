@@ -807,7 +807,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
 									"   //Check if the self url is correct\r",
@@ -835,7 +835,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-02-01\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-06-05\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -870,7 +870,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Lastname\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABABCB\");\r",
 									"   //Check if the self url is correct\r",
@@ -933,7 +933,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Newname\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-02-01\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"123456\");\r",
 									"   //Check if the self url is correct\r",
@@ -1353,7 +1353,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Problem Solving\");\r",
 									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Let your baby figure out how things work and what they do. Show baby how the switch turns the light on and off. Show him how the flashlight works. Talk to him about what you are doing and why: 'I am putting on a coat because I am cold.'\",);\r",
-									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(12);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(10);\r",
 									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://problem_solve_image.png\");\r",
 									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
 									"   //Check if the self url is correct\r",
@@ -1370,7 +1370,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Problem Solving\",\r\n    \"description\": \"Let your baby figure out how things work and what they do. Show baby how the switch turns the light on and off. Show him how the flashlight works. Talk to him about what you are doing and why: 'I am putting on a coat because I am cold.'\",\r\n    \"age_group\": 12,\r\n    \"image_url\": \"https://problem_solve_image.png\"\r\n}\r\n",
+							"raw": "{\r\n    \"title\": \"Problem Solving\",\r\n    \"description\": \"Let your baby figure out how things work and what they do. Show baby how the switch turns the light on and off. Show him how the flashlight works. Talk to him about what you are doing and why: 'I am putting on a coat because I am cold.'\",\r\n    \"age_group\": 10,\r\n    \"image_url\": \"https://problem_solve_image.png\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1456,7 +1456,7 @@
 									"",
 									"pm.test(\"404 error message\", function () {",
 									"     //Check for appropriate error message",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No activities object with this id 01 exists\");",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"No activities object with this id 1 exists\");",
 									"});",
 									"",
 									""
@@ -1599,7 +1599,7 @@
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated)\");\r",
 									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",);\r",
-									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(32);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(10);\r",
 									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\");\r",
 									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
 									"   //Check if the self url is correct\r",
@@ -1617,7 +1617,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"age_group\": 32\r\n}\r\n",
+							"raw": "{\r\n    \"age_group\": 10\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1654,7 +1654,7 @@
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated again)\");\r",
 									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated again)\",);\r",
-									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(32);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(10);\r",
 									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated_again\");\r",
 									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
 									"   //Check if the self url is correct\r",
@@ -1800,7 +1800,7 @@
 					"response": []
 				},
 				{
-					"name": "Assign activity 01 to child 01 (age group mismatch, fail)",
+					"name": "Assign activity 03 to child 01 (age group mismatch, fail)",
 					"event": [
 						{
 							"listen": "test",
@@ -1812,7 +1812,7 @@
 									"\r",
 									"pm.test(\"404 error message\", function () {\r",
 									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Activity age group (18) does not agree with child age group (12)\");\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Activity age group (12) does not agree with child age group (10)\");\r",
 									"});\r",
 									"\r",
 									""
@@ -1835,7 +1835,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}/activities/{{activity_id_01}}",
+							"raw": "{{app_url}}/child/{{child_id_01}}/activities/{{activity_id_03}}",
 							"host": [
 								"{{app_url}}"
 							],
@@ -1843,7 +1843,7 @@
 								"child",
 								"{{child_id_01}}",
 								"activities",
-								"{{activity_id_01}}"
+								"{{activity_id_03}}"
 							]
 						}
 					},
@@ -1945,6 +1945,59 @@
 							"path": [
 								"activities",
 								"{{activity_id_03}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get child 01, confirm activity 02 removed",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 success\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"    //Check if the content is valid\r",
+									"    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari\");\r",
+									"    pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-04\");\r",
+									"    pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(1);\r",
+									"    pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEF\");\r",
+									"    pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.equal([]);\r",
+									"    //Check if the self url is correct\r",
+									"       const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
 							]
 						}
 					},
