@@ -16,12 +16,6 @@ client = datastore.Client()
 
 bp = Blueprint(constants.child, __name__, url_prefix=f'/{constants.child}')
 
-min_name_length = 2
-min_premature_weeks = 0
-max_premature_weeks = 40
-provider_code_length = 6
-
-
 class Child(DB_Obj):
     def __init__(self, id=None):
         DB_Obj.__init__(self,
@@ -33,18 +27,18 @@ class Child(DB_Obj):
 
     def validate_values(self, content):
         failures = []
-        if "name" in content and len(content["name"]) < min_name_length:
-            failures.append(f"The name must be at least {min_name_length} characters")
+        if "name" in content and len(content["name"]) < constants.min_name_length:
+            failures.append(f"The name must be at least {constants.min_name_length} characters")
         if "birthday" in content:
-            date_object = datetime.strptime(content["birthday"], "%Y-%m-%d")
-            difference = datetime.now() - date_object
-            months = difference.days * 12 // 365
-            print(f"Child is {months} months old")
-        if "provider_code" in content and len(content["provider_code"]) != provider_code_length:
-            failures.append(f"The provider_code must be {provider_code_length} characters")
+            try:
+                age = get_age_group(content["birthday"])
+            except Exception as e:
+                failures.append(f"Failed to validate birthday: {e}")
+        if "provider_code" in content and len(content["provider_code"]) != constants.provider_code_length:
+            failures.append(f"The provider_code must be {constants.provider_code_length} characters")
         if "premature_weeks" in content and \
-                (content["premature_weeks"] < min_premature_weeks or content["premature_weeks"] > max_premature_weeks):
-            failures.append(f"The age_group must be between {min_premature_weeks} and {max_premature_weeks}")
+                (content["premature_weeks"] < constants.min_premature_weeks or content["premature_weeks"] > constants.max_premature_weeks):
+            failures.append(f"The premature_weeks must be between {constants.min_premature_weeks} and {constants.max_premature_weeks}")
 
         content["assigned_activities"] = content.get("assigned_activities", [])
 

@@ -101,7 +101,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{user_token_01}}",
+									"value": "{{user_token_02}}",
 									"type": "string"
 								}
 							]
@@ -185,7 +185,7 @@
 									"\r",
 									"pm.test(\"400 error message\", function () {\r",
 									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be at least 2 characters; The provider_code must be 6 characters; The age_group must be between 0 and 40\");\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be at least 2 characters; Failed to validate birthday: Incorrect birthday, expected in format %Y-%m-%d; The provider_code must be 6 characters; The premature_weeks must be between 0 and 40\");\r",
 									"});\r",
 									"\r",
 									""
@@ -199,7 +199,53 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"A\",\r\n    \"birthday\": \"2021-01-31\",\r\n    \"premature_weeks\": 100,\r\n    \"provider_code\": \"ABC\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"A\",\r\n    \"birthday\": \"21-01-31\",\r\n    \"premature_weeks\": 100,\r\n    \"provider_code\": \"ABC\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child (invalid birthday)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Failed to validate birthday: Child is too old, max age is 66 months\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Abc\",\r\n    \"birthday\": \"2000-01-31\",\r\n    \"premature_weeks\": 0,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -237,7 +283,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2021-01-31\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-04\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(1);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEF\");\r",
 									"   //Check if the self url is correct\r",
@@ -255,7 +301,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari\",\r\n    \"birthday\": \"2021-01-31\",\r\n    \"premature_weeks\": 1,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"Ari\",\r\n    \"birthday\": \"2022-06-04\",\r\n    \"premature_weeks\": 1,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -292,7 +338,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   //Check if the response content is valid and matches the expected values\r",
 									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Bobby\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2021-01-30\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-07-30\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(2);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEG\");\r",
 									"   //Check if the self url is correct\r",
@@ -310,7 +356,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Bobby\",\r\n    \"birthday\": \"2021-01-30\",\r\n    \"premature_weeks\": 2,\r\n    \"provider_code\": \"ABCDEG\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"Bobby\",\r\n    \"birthday\": \"2022-07-30\",\r\n    \"premature_weeks\": 2,\r\n    \"provider_code\": \"ABCDEG\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1406,7 +1452,7 @@
 									"pm.test(\"content is valid\", function () {\r",
 									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Roll a Ball\");\r",
 									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",);\r",
-									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(12);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(36);\r",
 									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://ball.png\");\r",
 									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
 									"   //Check if the self url is correct\r",
@@ -1423,7 +1469,60 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Roll a Ball\",\r\n    \"description\": \"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",\r\n    \"age_group\": 12,\r\n    \"image_url\": \"https://ball.png\"\r\n}\r\n",
+							"raw": "{\r\n    \"title\": \"Roll a Ball\",\r\n    \"description\": \"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",\r\n    \"age_group\": 36,\r\n    \"image_url\": \"https://ball.png\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create activity 04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set boat id environment variable from response\r",
+									"pm.environment.set(\"activity_id_04\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Roll a Ball_48\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(48);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://ball.png\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Roll a Ball_48\",\r\n    \"description\": \"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",\r\n    \"age_group\": 48,\r\n    \"image_url\": \"https://ball.png\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1710,7 +1809,7 @@
 					"response": []
 				},
 				{
-					"name": "Assign activity 02 to child 01",
+					"name": "Assign activity 03 to child 03",
 					"event": [
 						{
 							"listen": "test",
@@ -1740,22 +1839,22 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}/activities/{{activity_id_02}}",
+							"raw": "{{app_url}}/child/{{child_id_03}}/activities/{{activity_id_03}}",
 							"host": [
 								"{{app_url}}"
 							],
 							"path": [
 								"child",
-								"{{child_id_01}}",
+								"{{child_id_03}}",
 								"activities",
-								"{{activity_id_02}}"
+								"{{activity_id_03}}"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Assign activity 02 to child 01 (again, expect fail)",
+					"name": "Assign activity 03 to child 03 (again, expect fail)",
 					"event": [
 						{
 							"listen": "test",
@@ -1785,22 +1884,22 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{app_url}}/child/{{child_id_02}}/activities/{{activity_id_02}}",
+							"raw": "{{app_url}}/child/{{child_id_03}}/activities/{{activity_id_03}}",
 							"host": [
 								"{{app_url}}"
 							],
 							"path": [
 								"child",
-								"{{child_id_02}}",
+								"{{child_id_03}}",
 								"activities",
-								"{{activity_id_02}}"
+								"{{activity_id_03}}"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Assign activity 03 to child 01 (age group mismatch, fail)",
+					"name": "Assign activity 03 to child 03 (age group mismatch, fail)",
 					"event": [
 						{
 							"listen": "test",
@@ -1812,7 +1911,7 @@
 									"\r",
 									"pm.test(\"404 error message\", function () {\r",
 									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Activity age group (12) does not agree with child age group (10)\");\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Activity age group (48) does not agree with child age group (36)\");\r",
 									"});\r",
 									"\r",
 									""
@@ -1835,15 +1934,15 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{app_url}}/child/{{child_id_01}}/activities/{{activity_id_03}}",
+							"raw": "{{app_url}}/child/{{child_id_03}}/activities/{{activity_id_04}}",
 							"host": [
 								"{{app_url}}"
 							],
 							"path": [
 								"child",
-								"{{child_id_01}}",
+								"{{child_id_03}}",
 								"activities",
-								"{{activity_id_03}}"
+								"{{activity_id_04}}"
 							]
 						}
 					},
@@ -1962,10 +2061,10 @@
 									"});\r",
 									"pm.test(\"content is valid\", function () {\r",
 									"    //Check if the content is valid\r",
-									"    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari\");\r",
-									"    pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-04\");\r",
-									"    pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(1);\r",
-									"    pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEF\");\r",
+									"    pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari Newname\");\r",
+									"    pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
+									"    pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
+									"    pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"123456\");\r",
 									"    pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.equal([]);\r",
 									"    //Check if the self url is correct\r",
 									"       const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",

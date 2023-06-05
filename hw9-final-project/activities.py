@@ -47,7 +47,9 @@ class Activity(DB_Obj):
 
         print(f"DELETE activity {self.id}")
 
-        # remove reference to this activity from an
+        # remove activity from any children assigned to it
+        # default datastore opertaions do not have a concept of 'contains'
+        # so checking each entry like this (slow)
         query = client.query(kind=constants.child)
         children = list(query.fetch())
         for child in children:
@@ -59,8 +61,8 @@ class Activity(DB_Obj):
                 client.put(child)
                 print(f"AFTER UPDATE: {child}")
 
-        # remove activity from any children assigned to it
-        # default datastore opertaions do not have a concept of 'contains'
+        # TODO: remove any activities the user has selected to ignore
+
         return super().delete()
 
 @bp.route('', methods=["GET", "POST"])
