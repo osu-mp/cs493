@@ -22,7 +22,7 @@ class Activity(DB_Obj):
                         id=id,
                         key=constants.activities,
                         required=["title", "description", "age_group", "image_url"],
-                        optional=["video_url"]
+                        optional=[""]
                         )
 
     def validate_values(self, content):
@@ -38,7 +38,7 @@ class Activity(DB_Obj):
         if failures:
             return False, "; ".join(failures), 403
 
-        # TODO: future validation, ensure image_url and video_url (if given) point to accessible links
+        # TODO: future validation, ensure image_url points to accessible links
         return True, f"{self.key} validation passed", 200
 
     def delete(self):

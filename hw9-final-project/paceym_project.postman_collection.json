@@ -185,7 +185,7 @@
 									"\r",
 									"pm.test(\"400 error message\", function () {\r",
 									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be at least 2 characters; Failed to validate birthday: Incorrect birthday, expected in format %Y-%m-%d; The provider_code must be 6 characters; The premature_weeks must be between 0 and 40\");\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be between 2 and 40 characters; Failed to validate birthday: Incorrect birthday, expected in format %Y-%m-%d; The provider_code must be 6 characters; The premature_weeks must be between 0 and 40\");\r",
 									"});\r",
 									"\r",
 									""
@@ -231,7 +231,7 @@
 									"\r",
 									"pm.test(\"400 error message\", function () {\r",
 									"     //Check for appropriate error message\r",
-									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Failed to validate birthday: Child is too old, max age is 66 months\");\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"The name must be between 2 and 40 characters; Failed to validate birthday: Child is too old, max age is 66 months\");\r",
 									"});\r",
 									"\r",
 									""
@@ -245,7 +245,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Abc\",\r\n    \"birthday\": \"2000-01-31\",\r\n    \"premature_weeks\": 0,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"AbcdefghijklmnopqrstuvwxyzAbcdefghijklmnopqrstuv\",\r\n    \"birthday\": \"2000-01-31\",\r\n    \"premature_weeks\": 0,\r\n    \"provider_code\": \"ABCDEF\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -845,22 +845,9 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"303 status code\", function () {\r",
-									"    pm.response.to.have.status(303);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"content is valid\", function () {\r",
-									"   //Check if the response content is valid and matches the expected values\r",
-									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
-									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
-									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
-									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
-									"   //Check if the self url is correct\r",
-									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
-									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
-									"});\r",
-									""
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -1542,6 +1529,112 @@
 					"response": []
 				},
 				{
+					"name": "Create activity 05",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set boat id environment variable from response\r",
+									"pm.environment.set(\"activity_id_05\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Roll a Ball_54\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(54);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://ball.png\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Roll a Ball_54\",\r\n    \"description\": \"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",\r\n    \"age_group\": 54,\r\n    \"image_url\": \"https://ball.png\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create activity 06",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set boat id environment variable from response\r",
+									"pm.environment.set(\"activity_id_06\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Roll a Ball_60\");\r",
+									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",);\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(60);\r",
+									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://ball.png\");\r",
+									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Roll a Ball_60\",\r\n    \"description\": \"Your baby will enjoy playing with balls. You can sit across from her and roll a ball to her. Encourage her to roll it back. Clap your hands when she does. If the ball is big and soft (like a beach ball), she may be able to try to catch it.\",\r\n    \"age_group\": 60,\r\n    \"image_url\": \"https://ball.png\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/activities",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "delete activity (invalid id)",
 					"event": [
 						{
@@ -1633,22 +1726,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"303 status code\", function () {\r",
-									"    //Check for 201 status code\r",
-									"    pm.response.to.have.status(303);\r",
-									"});\r",
-									"\r",
-									"\r",
-									"pm.test(\"content is valid\", function () {\r",
-									"   //Check if the response content is valid and matches the expected values\r",
-									"   pm.expect(pm.response.json()[\"title\"]).to.eq(\"Flipping Pancakes (updated)\");\r",
-									"   pm.expect(pm.response.json()[\"description\"]).to.eq(\"Trim the corners from an ordinary household sponge to form a “pancake.” Give your child a small skillet and a spatula. Show him how to flip the pancake. (updated)\",);\r",
-									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(24);\r",
-									"   pm.expect(pm.response.json()[\"image_url\"]).to.eq(\"https://media.istockphoto.com/photos/stack-of-pancakes-with-butter-and-honey-on-white-picture-id1288723887?b=1&k=20&m=1288723887&s=612x612&w=0&h=kXTFhItSVv6xJ6Ei6huh5Fb8RpuYzexWHDXolDcyWx4=&updated\");\r",
-									"   pm.expect(pm.response.json()[\"video_url\"]).to.eq(undefined);\r",
-									"   //Check if the self url is correct\r",
-									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
-									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									""
 								],
@@ -1786,6 +1865,42 @@
 							"path": [
 								"activities",
 								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get activities 01",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get invalid activity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/1",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"1"
 							]
 						}
 					},
@@ -2044,6 +2159,102 @@
 							"path": [
 								"activities",
 								"{{activity_id_03}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete activity 04",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_04}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_04}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete activity 05",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_05}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_05}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete activity 06",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 no content\", function () {",
+									"    //Check for appropriate 204 code",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_06}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_06}}"
 							]
 						}
 					},

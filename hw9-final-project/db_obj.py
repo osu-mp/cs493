@@ -180,11 +180,10 @@ class DB_Obj:
                 obj.update({key: content[key]})
 
         client.put(obj)
-        item, code = self.get_item_from_db(obj.key.id)
 
-        res = make_response(item)
+        res = make_response("")
         res.headers.set('Content-Type', 'application/json')
-        res.status_code = 303
+        res.status_code = 200
         return res
 
     def patch_item(self, id, content):
@@ -208,3 +207,17 @@ class DB_Obj:
         res.headers.set('Content-Type', 'application/json')
         res.status_code = 200
         return res
+
+    def get_matching_items(self, content):
+        """
+        For the given entity, query for all matches in content dict
+        Args:
+            content: dictionary of key/value pairs to filter on
+
+        Returns: list of matching entities
+
+        """
+        query = client.query(kind=self.key)
+        for key in content:
+            query.add_filter(key, "=", content[key])
+        return list(query.fetch())

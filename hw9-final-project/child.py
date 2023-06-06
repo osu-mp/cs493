@@ -27,15 +27,21 @@ class Child(DB_Obj):
 
     def validate_values(self, content):
         failures = []
-        if "name" in content and len(content["name"]) < constants.min_name_length:
-            failures.append(f"The name must be at least {constants.min_name_length} characters")
+        if len(content["name"]) < constants.min_name_length or len(content["name"]) > constants.max_name_length:
+            failures.append(f"The name must be between {constants.min_name_length} and {constants.max_name_length} characters")
         if "birthday" in content:
             try:
                 age = get_age_group(content["birthday"])
             except Exception as e:
                 failures.append(f"Failed to validate birthday: {e}")
-        if "provider_code" in content and len(content["provider_code"]) != constants.provider_code_length:
-            failures.append(f"The provider_code must be {constants.provider_code_length} characters")
+        if "provider_code" in content:
+            if len(content["provider_code"]) != constants.provider_code_length:
+                failures.append(f"The provider_code must be {constants.provider_code_length} characters")
+
+            # check provider code is unique
+            matching_codes = self.get_matching_items({"provider_code": content["provider_code"]})
+            if len(matching_codes) > 0:
+                failures.append("The provider code is already in use")
         if "premature_weeks" in content and \
                 (content["premature_weeks"] < constants.min_premature_weeks or content["premature_weeks"] > constants.max_premature_weeks):
             failures.append(f"The premature_weeks must be between {constants.min_premature_weeks} and {constants.max_premature_weeks}")
