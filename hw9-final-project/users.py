@@ -1,6 +1,10 @@
+from dotenv import load_dotenv, find_dotenv
+
 from flask import Blueprint, request, make_response, jsonify, render_template_string
 from google.cloud import datastore
 import json
+from os import environ as env
+
 import constants
 from json2html import *
 import re
@@ -75,13 +79,24 @@ def response():
     elif request.method == "POST":
         # this endpoint is called by a PostUserRegistration flow in Auth0
         # it creates a user entry with the same email as used in the Auth0 process
-        payload = verify_jwt(request)
+        # given that auth0 will not allow duplicate email addresses, no duplication checks occur here
+        # the call from auth0 must provide the app_secret_key (found in .env) to validate
+        # payload = verify_jwt(request)
         content = request.get_json()
-        if payload["email"] != content["email"]:
-            return error("Mismatch between email and JWT, local user not created", 403)
-        content["children"] = []
-        content["ignore_activities"] = []
-        return User().create_new(content)
+        if 'app_secret_key' not in content:
+            return error("Missing app_secret_key", 401)
+        ENV_FILE = find_dotenv()
+        load_dotenv(ENV_FILE)
+        actual_secret_key = env.get("APP_SECRET_KEY")
+        if content['app_secret_key'] != actual_secret_key:
+            return error("Invalid app_secret_key value", 403)
+        new_user = {
+            "email": content["email"],
+            "children": [],
+            "ignore_activities": [],
+        }
+
+        return User().create_new(new_user)
     else:
         return "Method not recognized", 400
 

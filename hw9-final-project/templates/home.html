@@ -8,7 +8,6 @@
         <h1>Welcome {{session.userinfo.email}}!</h1>
         <p>Your JWT/id token is: {{session.id_token}}</p>
         <p><a href="/logout">Logout</a></p>
-        <div>TODO: delete this <br><pre>{{pretty}}</pre></div>
     {% else %}
         <h1>Welcome Caregiver. Please <a href="/login">login or register</a>.</h1>
     {% endif %}

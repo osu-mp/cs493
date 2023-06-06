@@ -206,9 +206,6 @@ def logout():
 
 @app.route("/")
 def home():
-    if request.accept_mimetype != 'application/json':
-        raise error("Unsupported accept mimetype, this API only supports 'application/json'", 406)
-
     return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
 
 
