@@ -1,5 +1,4 @@
-
-from flask import make_response, request, jsonify
+from flask import make_response, request
 from google.cloud import datastore
 from utils import error
 
@@ -9,6 +8,9 @@ import constants
 client = datastore.Client()
 
 class DB_Obj:
+    """
+    Base DB object class that every entity can build upon and customize as needed
+    """
     def __init__(self, id=None, key=None, required=[], optional=[]):
         self.key = key
         self.required = required
@@ -19,14 +21,27 @@ class DB_Obj:
             self.item, self.code = self.get_item_from_db(id)
 
 
-    def check_content_valid(self, content, check_required_exist=True):
+    def check_content_valid(self, content, check_required_exist=True, force_optional=False):
+        """
+        Check that the given content has the required attributes
+        Args:
+            content:
+            check_required_exist:
+            force_optional: If True, it will force optional params to be specific too (used for put)
+
+        Returns:
+
+        """
         if "id" in content:
             return False, "You may not edit the entry id", 405
 
         # check for required attributes (can be skipped for PATCH operations)
         if check_required_exist:
             missing = []
-            for key in self.required:
+            required_keys = self.required
+            if force_optional:
+                required_keys += self.optional
+            for key in required_keys:
                 if key not in content:
                     missing.append(key)
             if missing:
@@ -96,7 +111,7 @@ class DB_Obj:
         results = list(next(pages))
         if g_iterator.next_page_token:
             next_offset = q_offset + q_limit
-            next_url = request.base_url + "?offset=" + str(next_offset) # + "?limit=" + str(q_limit)
+            next_url = constants.url_root + "?offset=" + str(next_offset) # + "?limit=" + str(q_limit)
         else:
             next_url = None
         for e in results:
@@ -121,30 +136,9 @@ class DB_Obj:
         for id in ids:
             key = client.key(constants.child, int(id))
             keys.append(key)
-        # child = client.get(key=child_key)
-        # print(f"KEY {child_key}, CHILD {child}")
         multi = client.get_multi(keys)
 
         # TODO: only using pagination for the assignment, get rid of after
-        # query = client.query(kind=self.key)
-        # query.add_filter("key", "IN", keys)
-        # single = query.fetch()
-        print(f"{multi=}")
-        # print(f"{single=}")
-
-        # return json.dumps(multi), 200
-        # return {}, 200
-        # keys = [
-        #     client.get(constants.child, 5880693565423616)
-        # ]
-        # print(f"KEYS {keys}")
-        # keys = [client.key("Task", 1), client.key("Task", 2)]
-        children = client.get_multi(keys)
-        # print("CHILDREN {children}")
-
-        # query = client.query(kind=self.key)
-        # print(f"KEYS {keys}")
-        # query.add_filter("key", "IN", keys)
         q_limit = constants.pagination_query_limit
         q_offset = int(request.args.get('offset', '0'))
         # g_iterator = query.fetch(limit=q_limit, offset=q_offset)
@@ -162,12 +156,12 @@ class DB_Obj:
         if next_url:
             output["next"] = next_url
         output["total_items"] = len(multi)
-        print(f"{output=}")
         return json.dumps(output), 200
 
     def put_item(self, id, content):
         # check for required attributes
-        valid, msg, code = self.check_content_valid(content)
+
+        valid, msg, code = self.check_content_valid(content, force_optional=True)
         if not valid:
             return error(msg, 400)
 

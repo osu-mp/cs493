@@ -12,11 +12,16 @@ debug_date = "2023-06-05"   # when DEBUG is set to True, this is the date used a
 age_groups = [2, 4, 6, 8, 9, 10, 12, 14, 16, 18, 20, 22, 24, 27, 30, 33, 36, 42, 48, 54, 60]
 max_age = 66                # max age (in months) a child can be used in the app
 
+# child constraints
 min_name_length = 2         # range of valid names for a child
 max_name_length = 40
 min_premature_weeks = 0     # range of acceptable premature week values
 max_premature_weeks = 40
 provider_code_length = 6    # expected length of code from provider for each child
+
+# activity constraints
+max_title_len = 40
+max_description_len = 300
 
 pagination_query_limit = 5  # max number of entries to show in paginated GETs
 
@@ -24,6 +29,6 @@ pagination_query_limit = 5  # max number of entries to show in paginated GETs
 DEBUG = True
 
 # local version
-url_root = "http://127.0.0.1:8080"
+# url_root = "http://127.0.0.1:8080"
 # deployed version
-# url_root = "https://hw9-paceym.wm.r.appspot.com"
+url_root = "https://hw9-paceym.wm.r.appspot.com"

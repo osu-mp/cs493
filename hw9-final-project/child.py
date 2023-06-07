@@ -1,10 +1,6 @@
-from datetime import datetime
-from flask import Blueprint, request, make_response, jsonify, render_template_string
+from flask import Blueprint, request
 from google.cloud import datastore
 import json
-import constants
-from json2html import *
-import re
 from utils import error, get_age_group
 from db_obj import DB_Obj
 
@@ -12,11 +8,16 @@ from activities import Activity
 from auth import verify_jwt
 from users import User
 
+import constants
+
 client = datastore.Client()
 
 bp = Blueprint(constants.child, __name__, url_prefix=f'/{constants.child}')
 
 class Child(DB_Obj):
+    """
+    Child object that builds upon DB Obj class
+    """
     def __init__(self, id=None):
         DB_Obj.__init__(self,
                         id=id,
@@ -46,12 +47,18 @@ class Child(DB_Obj):
                 (content["premature_weeks"] < constants.min_premature_weeks or content["premature_weeks"] > constants.max_premature_weeks):
             failures.append(f"The premature_weeks must be between {constants.min_premature_weeks} and {constants.max_premature_weeks}")
 
-        content["assigned_activities"] = content.get("assigned_activities", [])
+        if "assigned_activities" in content:
+            for activity_id in list(content["assigned_activities"]):
+                item, code = Activity().get_item_from_db(activity_id)
+                if code == 404:
+                    failures.append(f"Activity with id {activity_id} not found")
+        else:
+            content["assigned_activities"] = content.get("assigned_activities", [])
 
         if failures:
             return False, "; ".join(failures), 403
 
-        # TODO: future validation, ensure image_url and video_url (if given) point to accessible links
+        # TODO: future validation, ensure image_url points to accessible links
         return True, f"{self.key} validation passed", 200
 
     def get_all_items(self):
@@ -92,9 +99,7 @@ def response():
     if request.method == "GET":
         try:
             payload = verify_jwt(request)
-            print(f"EMAIL {payload['email']}")
             children = User().get_child_ids_of_user(payload['email'])
-            print(f"CHILDREN {children}")
         except:
             return error("Unauthorized", 403)
 
@@ -106,13 +111,14 @@ def response():
         return "Method not recognized", 400
 
 @bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
-def activity_id(id):
+def child_id(id):
+    id = int(id)
     payload = verify_jwt(request)
     email = payload["email"]
     user_details, code =User().get_user_details(email)
     if code != 200:
         return error("Not found", 404)
-    if int(id) not in user_details["children"]:
+    if id not in user_details["children"]:
         return error("Not authorized", 403)
 
     obj = Child(id)
@@ -137,8 +143,6 @@ def assign_child_to_user(id, user_id):
     user_from_db, code = User().get_item_from_db(user_id)
     if code != 200:
         return error("Invalid auth", 401)
-    print(f'{user_from_db["email"]=}')
-    print(f'{payload["email"]}')
     if user_from_db["email"] != payload["email"]:
         return error("Invalid auth", 403)
 
@@ -156,11 +160,10 @@ def assign_child_to_user(id, user_id):
 
         key = client.key(constants.users, int(user_id))
         user = client.get(key=key)
-        print(f"USER BEFORE {user}")
         user["children"].append(child["id"])
-        print(f"USER AFTER {user}")
         client.put(user)
         return "DONE", 204
+
     elif request.method == "DELETE":
         # ensure child already assigned to user
         if child["id"] not in user_from_db["children"]:
@@ -168,9 +171,7 @@ def assign_child_to_user(id, user_id):
 
         key = client.key(constants.users, int(user_id))
         user = client.get(key=key)
-        print(f"USER BEFORE {user}")
         user["children"].remove(child["id"])
-        print(f"USER AFTER {user}")
         client.put(user)
         return "DONE", 204
 
@@ -188,10 +189,7 @@ def assign_activity(id, activity_id):
 
     payload = verify_jwt(request)
     children_for_user = User().get_child_ids_of_user(payload["email"])
-    print(f'{payload["email"]=}')
     # child is not assigned to user
-    print(f"Child id {id}")
-    print(f"children assigned to user {children_for_user}")
     if id not in children_for_user:
         return error("Invalid auth", 403)
 
@@ -215,24 +213,12 @@ def assign_activity(id, activity_id):
 
         key = client.key(constants.child, int(child["id"]))
         child = client.get(key=key)
-        print(f"child BEFORE {child}")
         child["assigned_activities"].append(activity_id)
-        print(f"child AFTER {child}")
         client.put(child)
         return "DONE", 204
     elif request.method == "DELETE":
-        # TODO
-        return error("not implemented", 404)
-        # ensure child already assigned to user
-        if child["id"] not in user_from_db["children"]:
-            return error("Child not assigned to user", 403)
+        # TODO in a future release
+        return error("not implemented yet", 404)
 
-        key = client.key(constants.users, int(user_id))
-        user = client.get(key=key)
-        print(f"USER BEFORE {user}")
-        user["children"].remove(child["id"])
-        print(f"USER AFTER {user}")
-        client.put(user)
-        return "DONE", 204
 
     return "Method not recognized", 400

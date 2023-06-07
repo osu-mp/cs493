@@ -234,6 +234,29 @@ def user_details():
     users.User(id).put_item(id, user_details)
     return json.dumps({"id":id}), 200
 
+@app.route("/clean")
+def clean_db():
+    """
+    Clean the db of all children and activities
+    -Ideally there would be separate prod and dev databases, but
+    this is just a mock-up. Added this for ease of running Postman tests
+    (particularly for graders)
+    Returns: 200 for all operations
+
+    """
+    # ensure the user has a jwt to delete
+    payload = verify_jwt(request)
+
+    for kind in [constants.activities, constants.child]:
+        query = client.query(kind=kind)
+        results = list(query.fetch())
+        keys = []
+        for item in results:
+            keys.append(item.key)
+        client.delete_multi(keys)
+        print(f"Deleted {len(keys)} of type {kind}")
+
+    return "", 200
 
 def get_payload_sub():
     payload = verify_jwt(request)
@@ -259,3 +282,4 @@ def method_not_allowed(e):
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)
 
+# TODO : cleanup children and activities

@@ -124,6 +124,7 @@ def boat_arrives(slip_id, boat_id):
     return "", 204
 
 
+
 def remove_boat_from_slip(slip_id, boat_id):
     boat, boat_code = get_single_boat(boat_id)
     slip, slip_code = get_single_slip(slip_id)

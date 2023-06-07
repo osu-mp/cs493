@@ -1,8 +1,6 @@
 import json
 from datetime import datetime
-from dotenv import load_dotenv, find_dotenv
 from google.cloud import datastore
-from os import environ as env
 
 import constants
 
@@ -36,12 +34,12 @@ def get_age_group(birthday):
 
     difference = now - date_object
     months = difference.days * 12 // 365
-    print(f"Child is {months} months old")
+    # print(f"Child is {months} months old")
     if months > constants.max_age:
         raise Exception(f"Child is too old, max age is {constants.max_age} months")
     for group in sorted(constants.age_groups, reverse=True):
         if months >= group:
-            print(f"Child is in the {group} month age group")
+            # print(f"Child is in the {group} month age group")
             return group
 
     raise Exception(f"Invalid birthday, the age does not fall into one of the following month groups {age_groups}")

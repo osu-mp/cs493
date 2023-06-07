@@ -1,9 +1,6 @@
-from flask import Blueprint, request, make_response, jsonify, render_template_string
+from flask import Blueprint, request
 from google.cloud import datastore
-import json
 import constants
-from json2html import *
-import re
 from utils import error
 from db_obj import DB_Obj
 
@@ -11,18 +8,21 @@ client = datastore.Client()
 
 bp = Blueprint('activities', __name__, url_prefix='/activities')
 
-max_title_len = 40
-max_description_len = 300
+max_title_len = constants.max_title_len
+max_description_len = constants.max_description_len
 min_age_group = 0
-max_age_group = 60
+max_age_group = max(constants.age_groups)
 
 class Activity(DB_Obj):
+    """
+    Activity entities that build on basic DB Obj class
+    """
     def __init__(self, id=None):
         DB_Obj.__init__(self,
                         id=id,
                         key=constants.activities,
                         required=["title", "description", "age_group", "image_url"],
-                        optional=[""]
+                        optional=[]
                         )
 
     def validate_values(self, content):
@@ -42,27 +42,28 @@ class Activity(DB_Obj):
         return True, f"{self.key} validation passed", 200
 
     def delete(self):
+        """
+        When deleting an activity, ensure it is deleted from any children
+        that are assigned to it
+        Returns:
+
+        """
         if not self.id:
             return error(f"id must be given", 404)
 
-        print(f"DELETE activity {self.id}")
-
         # remove activity from any children assigned to it
-        # default datastore opertaions do not have a concept of 'contains'
+        # default datastore operations do not have a concept of 'contains'
         # so checking each entry like this (slow)
         query = client.query(kind=constants.child)
         children = list(query.fetch())
         for child in children:
             if self.id in child["assigned_activities"]:
-                print(f"BEFORE UPDATE: {child}")
                 activities = list(child["assigned_activities"])
                 activities.remove(self.id)
                 child.update({"assigned_activities": activities})
                 client.put(child)
-                print(f"AFTER UPDATE: {child}")
 
-        # TODO: remove any activities the user has selected to ignore
-
+        # after cleaning up children, delete the activity from the db
         return super().delete()
 
 @bp.route('', methods=["GET", "POST"])
@@ -74,6 +75,7 @@ def response():
     else:
         return "Method not recognized", 400
 
+@bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
 @bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
 def activity_id(id):
     obj = Activity(id)
