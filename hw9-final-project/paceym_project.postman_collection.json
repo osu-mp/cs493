@@ -7,10 +7,70 @@
 	},
 	"item": [
 		{
+			"name": "Pre-run cleanup",
+			"item": [
+				{
+					"name": "Delete activities and children",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/clean",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"clean"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Caregivers (users)",
 			"item": [
 				{
 					"name": "Get all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -265,6 +325,52 @@
 					"response": []
 				},
 				{
+					"name": "Create child (invalid activity)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"400 error message\", function () {\r",
+									"     //Check for appropriate error message\r",
+									"     pm.expect(pm.response.json()[\"Error\"]).to.eq(\"Activity with id 1 not found; Activity with id 2 not found\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Ari\",\r\n    \"birthday\": \"2022-06-04\",\r\n    \"premature_weeks\": 1,\r\n    \"provider_code\": \"CCCCCC\",\r\n    \"assigned_activities\": [1, 2]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create child 01",
 					"event": [
 						{
@@ -286,6 +392,7 @@
 									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-04\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(1);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEF\");\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq([]);\r",
 									"   //Check if the self url is correct\r",
 									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
 									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
@@ -341,6 +448,7 @@
 									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-07-30\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(2);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEG\");\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq([]);\r",
 									"   //Check if the self url is correct\r",
 									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
 									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
@@ -396,6 +504,7 @@
 									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2020-01-30\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(3);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEH\");\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq([]);\r",
 									"   //Check if the self url is correct\r",
 									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
 									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
@@ -451,6 +560,7 @@
 									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2019-01-30\");\r",
 									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(0);\r",
 									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"ABCDEI\");\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq([]);\r",
 									"   //Check if the self url is correct\r",
 									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
 									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
@@ -533,23 +643,6 @@
 					"response": []
 				},
 				{
-					"name": "Get all activities (w/ pagination)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{app_url}}/child",
-							"host": [
-								"{{app_url}}"
-							],
-							"path": [
-								"child"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get children of user 01 (should be empty)",
 					"event": [
 						{
@@ -591,6 +684,40 @@
 							],
 							"path": [
 								"child"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get child 01 with no auth (401)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"401 status code\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
 							]
 						}
 					},
@@ -818,7 +945,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"raw": "{\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\",\r\n    \"assigned_activities\": []\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -868,13 +995,109 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-06-05\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\": \"Ari (updated)\",\r\n    \"birthday\": \"2022-06-05\",\r\n    \"premature_weeks\": 10,\r\n    \"provider_code\": \"FEDCBA\",\r\n    \"assigned_activities\": []\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get child 01 as user 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Ari (updated)\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2022-06-05\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(10);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"FEDCBA\");\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq([]);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_01}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_01}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get child 01 as user 02 (403)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"403 status code\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_02}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
 						"url": {
 							"raw": "{{app_url}}/child/{{child_id_01}}",
 							"host": [
@@ -1872,6 +2095,20 @@
 				},
 				{
 					"name": "Get activities 01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1890,6 +2127,20 @@
 				},
 				{
 					"name": "Get invalid activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"404 status code\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1908,6 +2159,24 @@
 				},
 				{
 					"name": "Get all activities (w/ pagination) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   pm.expect(pm.response.json()[\"total_items\"]).to.eq(6);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2014,7 +2283,7 @@
 					"response": []
 				},
 				{
-					"name": "Assign activity 03 to child 03 (age group mismatch, fail)",
+					"name": "Assign activity 04 to child 03 (age group mismatch, fail)",
 					"event": [
 						{
 							"listen": "test",
@@ -2058,6 +2327,161 @@
 								"{{child_id_03}}",
 								"activities",
 								"{{activity_id_04}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get activity 03 (see which children assigned)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"200 status code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"age_group\"]).to.eq(36);\r",
+									"   const child_id_03 = pm.environment.get(\"child_id_03\");\r",
+									"   pm.expect(pm.response.json()[\"children_assigned_activity\"]).to.deep.eq([child_id_03]);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/activities/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/activities/{{activity_id_03}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"activities",
+								"{{activity_id_03}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete activity 03 from child 03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"204 status code\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token_01}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{app_url}}/child/{{child_id_03}}/activities/{{activity_id_03}}",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child",
+								"{{child_id_03}}",
+								"activities",
+								"{{activity_id_03}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create child 05 (assign activities at creation)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Set child id environment variable from response\r",
+									"pm.environment.set(\"child_id_05\", pm.response.json()[\"id\"]);\r",
+									"\r",
+									"pm.test(\"201 status code\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"content is valid\", function () {\r",
+									"   //Check if the response content is valid and matches the expected values\r",
+									"   pm.expect(pm.response.json()[\"name\"]).to.eq(\"Donnie\");\r",
+									"   pm.expect(pm.response.json()[\"birthday\"]).to.eq(\"2019-01-30\");\r",
+									"   pm.expect(pm.response.json()[\"premature_weeks\"]).to.eq(0);\r",
+									"   pm.expect(pm.response.json()[\"provider_code\"]).to.eq(\"BBBBBB\");\r",
+									"   const activity_01_and_02 = [pm.environment.get(\"activity_id_01\"), pm.environment.get(\"activity_id_02\")]\r",
+									"   pm.expect(pm.response.json()[\"assigned_activities\"]).to.deep.eq(activity_01_and_02);\r",
+									"   //Check if the self url is correct\r",
+									"   const self_url = pm.environment.get(\"app_url\") + \"/child/\" + pm.response.json()[\"id\"];\r",
+									"   pm.expect(pm.response.json()[\"self\"]).to.eq(self_url);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Donnie\",\r\n    \"birthday\": \"2019-01-30\",\r\n    \"premature_weeks\": 0,\r\n    \"provider_code\": \"BBBBBB\",\r\n    \"assigned_activities\": [{{activity_id_01}}, {{activity_id_02}}]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{app_url}}/child",
+							"host": [
+								"{{app_url}}"
+							],
+							"path": [
+								"child"
 							]
 						}
 					},

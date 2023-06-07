@@ -66,6 +66,24 @@ class Activity(DB_Obj):
         # after cleaning up children, delete the activity from the db
         return super().delete()
 
+    def get_item_from_db(self, id, include_extras=True):
+        id = int(id)
+        item, code = super().get_item_from_db(id, include_extras)
+        if code != 200:
+            return error(f"Failed to get {self.key} with id {id} from db", code)
+
+        # add in all children assigned this activity
+        child_ids = []
+        query = client.query(kind=constants.child)
+        children = list(query.fetch())
+        for child in children:
+            if id in child["assigned_activities"]:
+                child_ids.append(child.key.id)
+
+        item["children_assigned_activity"] = child_ids
+        return item, 200
+
+
 @bp.route('', methods=["GET", "POST"])
 def response():
     if request.method == "GET":
@@ -76,12 +94,10 @@ def response():
         return "Method not recognized", 400
 
 @bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
-@bp.route('/<id>', methods=["GET", "DELETE", "PUT", "PATCH"])
 def activity_id(id):
     obj = Activity(id)
     if not obj:
         return error(f"Activity with id {id} not found", 404)
-
     if request.method == "GET":
         return obj.get_item_from_db(id)
     elif request.method == "DELETE":

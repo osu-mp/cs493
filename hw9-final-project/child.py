@@ -205,10 +205,9 @@ def assign_activity(id, activity_id):
 
         # a child can be assigned multiple activities, no need to check further
 
-        # TODO: ensure activity is correct group for child
+        # ensure activity is correct group for child
         child_age_group = get_age_group(child["birthday"])
         if child_age_group != activity["age_group"]:
-
             return error(f"Activity age group ({activity['age_group']}) does not agree with child age group ({child_age_group})", 403)
 
         key = client.key(constants.child, int(child["id"]))
@@ -217,8 +216,15 @@ def assign_activity(id, activity_id):
         client.put(child)
         return "DONE", 204
     elif request.method == "DELETE":
-        # TODO in a future release
-        return error("not implemented yet", 404)
+        # ensure child already assigned activity
+        if activity_id not in child["assigned_activities"]:
+            return error("Activity not assigned to child", 403)
+
+        key = client.key(constants.child, int(child["id"]))
+        child = client.get(key=key)
+        child["assigned_activities"].remove(activity_id)
+        client.put(child)
+        return "DONE", 204
 
 
     return "Method not recognized", 400
